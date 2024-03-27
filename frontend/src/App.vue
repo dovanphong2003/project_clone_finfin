@@ -1,6 +1,7 @@
-<script setup lang="ts"></script>
-
+<script setup lang="ts">
+import LayoutCustomer from './layouts/LayoutCustomer.vue'
+</script>
 <template>
-  <div></div>
+  <LayoutCustomer />
 </template>
 <style lang="scss" scoped></style>

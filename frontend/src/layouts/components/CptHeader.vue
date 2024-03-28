@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import type Ref from 'vue'
+import type { Ref } from 'vue'
+import { RouterLink } from 'vue-router'
 const imageUrl: Ref<string> = ref('/img/image_logo.png')
 </script>
 <template>
@@ -11,12 +12,20 @@ const imageUrl: Ref<string> = ref('/img/image_logo.png')
     <div class="main_header">
       <div class="box_content-main_header"></div>
       <div class="logo-main_header">
-        <route-link to="#"> <img :src="imageUrl" class="logo" alt="logo" /></route-link>
+        <RouterLink class="router_link" to="#">
+          <img :src="imageUrl" class="logo" alt="logo"
+        /></RouterLink>
       </div>
       <div class="setting_icon-main_header">
-        <route-link to="#"><img class="icon" src="/icon/profile-user.png" alt="" /></route-link>
-        <route-link to="#"><img class="icon" src="/icon/cart.png" alt="" /></route-link>
-        <route-link to="#"><img class="icon" src="/icon/search.png" alt="" /></route-link>
+        <RouterLink class="router_link" to="#"
+          ><img class="icon" src="/icon/profile-user.png" alt=""
+        /></RouterLink>
+        <RouterLink class="router_link" to="#"
+          ><img class="icon" src="/icon/cart.png" alt=""
+        /></RouterLink>
+        <RouterLink class="router_link" to="#"
+          ><img class="icon" src="/icon/search.png" alt=""
+        /></RouterLink>
       </div>
     </div>
   </header>

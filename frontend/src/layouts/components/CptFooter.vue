@@ -1,3 +1,5 @@
+<script setup lang="ts"></script>
+import { RouterLink } from 'vue-router'
 <template>
   <footer class="footer">
     <div class="footer_main">
@@ -6,29 +8,29 @@
           <div class="footer-col">
             <h4>Công ty</h4>
             <ul>
-              <li><route-link to="#">Về chúng tôi</route-link></li>
-              <li><route-link to="#">Địa chỉ văn phòng</route-link></li>
-              <li><route-link to="#">Dịch vụ</route-link></li>
-              <li><route-link to="#">Chương trình</route-link></li>
+              <li><RouterLink class="router_link" to="#">Về chúng tôi</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Địa chỉ văn phòng</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Dịch vụ</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Chương trình</RouterLink></li>
             </ul>
           </div>
           <div class="footer-col">
             <h4>Hỗ trợ</h4>
             <ul>
-              <li><route-link to="#">Câu hỏi</route-link></li>
-              <li><route-link to="#">Vận chuyển</route-link></li>
-              <li><route-link to="#">Trả lại</route-link></li>
-              <li><route-link to="#">Trạng thái đơn hàng</route-link></li>
-              <li><route-link to="#">Thanh Toán</route-link></li>
+              <li><RouterLink class="router_link" to="#">Câu hỏi</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Vận chuyển</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Trả lại</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Trạng thái đơn hàng</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Thanh Toán</RouterLink></li>
             </ul>
           </div>
           <div class="footer-col">
             <h4>Liên kết</h4>
             <ul>
-              <li><route-link to="#">Facebook</route-link></li>
-              <li><route-link to="#">Tiktok</route-link></li>
-              <li><route-link to="#">Youtube</route-link></li>
-              <li><route-link to="#">Instagram</route-link></li>
+              <li><RouterLink class="router_link" to="#">Facebook</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Tiktok</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Youtube</RouterLink></li>
+              <li><RouterLink class="router_link" to="#">Instagram</RouterLink></li>
             </ul>
           </div>
           <div class="footer-col">
@@ -39,24 +41,10 @@
       </div>
     </div>
     <div class="footer_bottom">
-      <p>Copyright © 2024 <route-link to="#">WinWin</route-link></p>
+      <p>Copyright © 2024 <RouterLink class="router_link" to="#">WinWin</RouterLink></p>
     </div>
   </footer>
 </template>
-
-<script>
-import { ref } from 'vue'
-
-export default {
-  setup() {
-    const title = ref('Footer')
-
-    return {
-      title
-    }
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 .container {
@@ -103,7 +91,7 @@ ul {
 .footer-col ul li:not(:last-child) {
   margin-bottom: 10px;
 }
-.footer-col ul li route-link {
+.footer-col ul li .router_link {
   font-size: 15px;
   text-transform: capitalize;
   text-decoration: none;
@@ -113,7 +101,7 @@ ul {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-.footer-col ul li route-link:hover {
+.footer-col ul li RouterLink:hover {
   color: $color_default_for_hover_text;
   padding-left: 8px;
 }
@@ -122,7 +110,7 @@ ul {
   padding: 20px 0px;
   font-size: 15px;
   color: $color_default_for_text;
-  route-link {
+  .router_link {
     cursor: pointer;
   }
 }

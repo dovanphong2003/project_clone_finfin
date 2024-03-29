@@ -101,7 +101,7 @@ ul {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-.footer-col ul li RouterLink:hover {
+.footer-col ul li .router_link:hover {
   color: $color_default_for_hover_text;
   padding-left: 8px;
 }
@@ -112,6 +112,8 @@ ul {
   color: $color_default_for_text;
   .router_link {
     cursor: pointer;
+    text-decoration: none;
+    color: $color_default_for_text;
   }
 }
 /*responsive*/

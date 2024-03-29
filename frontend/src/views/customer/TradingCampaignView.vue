@@ -3,10 +3,10 @@ import { ref, type Ref } from 'vue'
 import breadCrumb from '../../modules/breadcrumb/breadCrumb.vue'
 import CptProduct from '@/common/components/CptProduct.vue'
 const itemsImage: Ref = ref([
+  '/img/book/book_1.webp',
   '/img/book/book_2.webp',
   '/img/book/book_1.webp',
   '/img/book/book_1.webp',
-  '/img/book/book_2.webp',
   '/img/book/book_2.webp',
   '/img/book/book_1.webp',
   '/img/book/book_2.webp',
@@ -18,16 +18,16 @@ const itemsImage: Ref = ref([
 ])
 </script>
 <template>
-  <div class="main_content-book_trading">
+  <div class="main_content-trading_campaign">
     <breadCrumb />
-    <h1>Sách trading</h1>
+    <h1>Sách giao dịch thực chiến</h1>
     <div class="list_product">
       <CptProduct v-for="(image, index) in itemsImage" v-bind:key="index" :image="image" />
     </div>
   </div>
 </template>
 <style lang="scss" scoped>
-.main_content-book_trading {
+.main_content-trading_campaign {
   h1 {
     padding: 50px 15px 70px 15px;
     font-size: 24px;

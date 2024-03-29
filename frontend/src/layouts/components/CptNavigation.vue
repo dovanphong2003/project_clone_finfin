@@ -1,26 +1,48 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+const route = useRoute()
+const activeClass = ref('active')
+const classDefault_route_link = ref('router_link')
 </script>
 
 <template>
   <nav class="navigation">
     <ul class="navigation__list">
-      <RouterLink class="router_link" to="/home">
+      <RouterLink
+        :class="[route.path === '/home' ? activeClass : '', classDefault_route_link]"
+        to="/home"
+      >
         <li class="navigation__item">Trang chủ</li>
       </RouterLink>
-      <RouterLink class="router_link" to="#">
+      <RouterLink
+        :class="[route.path === '/trading-campaign' ? activeClass : '', classDefault_route_link]"
+        to="/trading-campaign"
+      >
         <li class="navigation__item">Giao dịch thực chiến</li>
       </RouterLink>
-      <RouterLink class="router_link" to="book-trading">
+      <RouterLink
+        :class="[route.path === '/book-trading' ? activeClass : '', classDefault_route_link]"
+        to="/book-trading"
+      >
         <li class="navigation__item">Sách trading</li>
       </RouterLink>
-      <RouterLink class="router_link" to="#">
+      <RouterLink
+        :class="[route.path === '/investment-books' ? activeClass : '', classDefault_route_link]"
+        to="/investment-books"
+      >
         <li class="navigation__item">Sách đầu tư</li>
       </RouterLink>
-      <RouterLink class="router_link" to="#">
+      <RouterLink
+        :class="[route.path === '/good-book' ? activeClass : '', classDefault_route_link]"
+        to="/good-book"
+      >
         <li class="navigation__item">Sách hay</li>
       </RouterLink>
-      <RouterLink class="router_link" to="#">
+      <RouterLink
+        :class="[route.path === '/all-book' ? activeClass : '', classDefault_route_link]"
+        to="/all-book"
+      >
         <li class="navigation__item">Tất cả sản phẩm</li>
       </RouterLink>
     </ul>
@@ -61,7 +83,7 @@ import { RouterLink } from 'vue-router'
       display: block;
       position: absolute;
       bottom: -3px;
-      left: 0;
+      left: 12px;
       width: 0;
       height: 2px;
       transition: all 0.3s ease-in-out;
@@ -70,8 +92,16 @@ import { RouterLink } from 'vue-router'
       background-position: 0;
     }
     .router_link:hover::before {
-      width: 100%;
+      width: 80%;
     }
   }
+}
+
+// active
+.active {
+  background-position: 0 !important;
+}
+.active::before {
+  width: 80% !important;
 }
 </style>

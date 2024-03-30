@@ -29,12 +29,11 @@ if (route.path === '/trading-campaign') {
     </ul>
   </div>
 </template>
-<style lang="scss">
+<style lang="scss" scoped>
 .breadcrumb {
   padding: 10px 15px;
   ul {
     display: flex;
-    padding: 0px 4px;
     li {
       list-style: none;
       .route_link {

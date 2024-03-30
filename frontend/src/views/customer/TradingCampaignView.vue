@@ -2,6 +2,7 @@
 import { ref, type Ref } from 'vue'
 import breadCrumb from '../../modules/breadcrumb/breadCrumb.vue'
 import CptProduct from '@/common/components/CptProduct.vue'
+import sortFillListBook from '../../modules/sortFillListBook/sortFillListBook.vue'
 const itemsImage: Ref = ref([
   '/img/book/book_1.webp',
   '/img/book/book_2.webp',
@@ -20,7 +21,10 @@ const itemsImage: Ref = ref([
 <template>
   <div class="main_content-trading_campaign">
     <breadCrumb />
-    <h1>Sách giao dịch thực chiến</h1>
+    <div class="top-main_content-all_book">
+      <h1>Sách giao dịch thực hiến</h1>
+      <sortFillListBook />
+    </div>
     <div class="list_product">
       <CptProduct v-for="(image, index) in itemsImage" v-bind:key="index" :image="image" />
     </div>
@@ -28,11 +32,16 @@ const itemsImage: Ref = ref([
 </template>
 <style lang="scss" scoped>
 .main_content-trading_campaign {
-  h1 {
+  .top-main_content-all_book {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 50px 15px 70px 15px;
-    font-size: 24px;
-    color: $color_default_for_text;
-    font-weight: 600;
+    h1 {
+      font-size: 24px;
+      color: $color_default_for_text;
+      font-weight: 600;
+    }
   }
   .list_product {
     padding: 0px 10px;

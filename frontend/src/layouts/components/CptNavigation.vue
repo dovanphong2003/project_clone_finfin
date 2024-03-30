@@ -54,6 +54,7 @@ const classDefault_route_link = ref('router_link')
   padding: 0px 60px;
   padding-bottom: 16px;
   padding-top: 4px;
+  border-bottom: 1px solid #ededed;
   .navigation__list {
     text-align: center;
     .router_link {

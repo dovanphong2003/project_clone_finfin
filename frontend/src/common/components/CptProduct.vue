@@ -2,11 +2,15 @@
 defineProps<{
   image?: string
 }>()
+
 import { RouterLink } from 'vue-router'
+
+const randomNumber = Math.floor(Math.random() * (1000 - 10 + 1)) + 10
+const link = 'detail-product/' + randomNumber.toString()
 </script>
 <template>
   <div class="product">
-    <RouterLink class="route_link" to="#">
+    <RouterLink class="route_link" :to="link">
       <div class="glass-shine-effect">
         <img :src="image" alt="" />
       </div>

@@ -8,6 +8,7 @@ import AllBookView from '../views/customer/AllBookView.vue'
 import LoginView from '../views/customer/LoginView.vue'
 import RegisterView from '../views/customer/RegisterView.vue'
 import ForgetPasswordView from '../views/customer/ForgetPasswordView.vue'
+import DetailProduct from '../views/customer/DetailProduct.vue'
 const routes = [
   { path: '/', redirect: '/home' },
   { path: '/home', component: HomeView, name: 'Home' },
@@ -18,7 +19,8 @@ const routes = [
   { path: '/all-book', component: AllBookView, name: 'AllBook' },
   { path: '/login', component: LoginView, name: 'Login' },
   { path: '/register', component: RegisterView, name: 'Register' },
-  { path: '/forget-password', component: ForgetPasswordView, name: 'ForgetPassword' }
+  { path: '/forget-password', component: ForgetPasswordView, name: 'ForgetPassword' },
+  { path: '/detail-product/:id', component: DetailProduct, name: 'DetailProduct' }
 ]
 
 const router = createRouter({

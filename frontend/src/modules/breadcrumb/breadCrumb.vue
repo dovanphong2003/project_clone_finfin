@@ -13,6 +13,13 @@ if (route.path === '/trading-campaign') {
 } else if (route.path === '/investment-books') {
   path = 'Sách đầu tư'
 }
+defineProps({
+  nameBreadCrumb: {
+    type: String,
+    required: false,
+    default: ''
+  }
+})
 </script>
 <template>
   <div class="breadcrumb">
@@ -23,7 +30,7 @@ if (route.path === '/trading-campaign') {
       <li class="sign">/</li>
       <li>
         <RouterLink class="route_link breadcrumb_path_current" to="#">{{
-          path.replace(/\//, '')
+          nameBreadCrumb ? nameBreadCrumb : path.replace(/\//, '')
         }}</RouterLink>
       </li>
     </ul>
@@ -32,6 +39,7 @@ if (route.path === '/trading-campaign') {
 <style lang="scss" scoped>
 .breadcrumb {
   padding: 10px 15px;
+  background-color: #f5f5f5;
   ul {
     display: flex;
     li {

@@ -2,6 +2,8 @@
 import { ref, type Ref } from 'vue'
 import CptProduct from '@/common/components/CptProduct.vue'
 import CpnSlideShow from '../../modules/slideShow/CptSlideShow.vue'
+
+// image for product
 const itemsImage: Ref = ref([
   '/img/book/book_1.webp',
   '/img/book/book_1.webp',
@@ -16,10 +18,21 @@ const itemsImage: Ref = ref([
   '/img/book/book_1.webp',
   '/img/book/book_1.webp'
 ])
+
+// slide show
+const slides = [
+  { imageUrl: '/img/slide_show/slideshow_1.webp', link: '/home' },
+  { imageUrl: '/img/slide_show/slideshow_2.webp', link: '/book-trading' },
+  { imageUrl: '/img/slide_show/slideshow_3.webp', link: '/' },
+  { imageUrl: '/img/slide_show/slideshow_4.webp', link: '/' }
+]
+
+// set height for slide show
+const heightSlide = '300px'
 </script>
 <template>
   <div class="main_content-view_home">
-    <CpnSlideShow />
+    <CpnSlideShow :arrayImage="slides" :height-slide="heightSlide" />
     <h2 class="heading-view_home">Sản phẩm bán chạy</h2>
     <div class="container_list_product">
       <div class="list_product">

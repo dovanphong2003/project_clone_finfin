@@ -54,7 +54,7 @@ const handleClickCloseModalCart = async () => {
     <div class="main_header">
       <div class="box_content-main_header"></div>
       <div class="logo-main_header">
-        <RouterLink class="router_link" to="#">
+        <RouterLink class="router_link" to="/home">
           <img :src="imageUrl" class="logo" alt="logo"
         /></RouterLink>
       </div>

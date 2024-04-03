@@ -22,8 +22,7 @@ const countDown = () => {
 }
 const slides = [
   {
-    imageUrl:
-      'https://lh3.googleusercontent.com/proxy/l9UjrdGdFmVSzX2edJZ13EWA7ibWUTP030BM2PcbjUI3Wt5jQURk5i3d8As67OFTqBG7cpOupiAVzT_Dz_9HrB4ffqLVVHYN_paXuIreIWveSiUQZIetZsZ399y6zXGe2oqIz4o8eloGonmz43TAS7rzywY1DpcUW3cdE-aEmBaQTqQVcIeT9IJ4XsAK6M3AaRg',
+    imageUrl: 'https://www.elle.vn/wp-content/uploads/2021/07/15/442832/1-sach-hay-song-cham.jpg',
     link: ''
   },
   {
@@ -212,7 +211,7 @@ const title = 'Bộ sách "Kỹ năng và Phương pháp Giao dịch của các 
         margin-top: 20px;
         button {
           @include btn-border-drawing;
-          width: 25%;
+          width: 40%;
           height: 50px;
           background-color: $color_button;
           color: white;

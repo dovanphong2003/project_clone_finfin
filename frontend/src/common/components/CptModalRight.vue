@@ -62,23 +62,26 @@ defineProps({
     background-color: rgba(0, 0, 0, 0.5);
   }
   .modal {
-    padding: 60px 70px 100px 70px;
+    padding: 0px 70px 100px 70px;
     position: absolute;
     right: 0;
     top: 0;
     width: 25%;
-    height: 100%;
+    // max-height: 100vh;
+    overflow-y: scroll;
     transform: translate(100%, 0%);
     background-color: white;
     z-index: 10;
+    height: 100vh;
     .content_modal {
+      /* Limit the container's height */
       .close_modal {
-        padding-bottom: 20px;
+        padding-top: 20px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         .title_modal {
-          font-size: 14px;
+          font-size: 16px;
           font-weight: 500;
           color: $color_default_for_text;
         }

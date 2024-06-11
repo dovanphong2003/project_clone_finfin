@@ -12,4 +12,6 @@ const roleUser = useUserInfoStore().role
   <!-- Mặc định, render LayoutCustomer -->
   <LayoutCustomer v-else />
 </template>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// @import './../node_modules/@vueform/vueform/dist/vueform.css';
+</style>

@@ -8,53 +8,52 @@ import LoginView from '../views/customer/LoginView.vue'
 import RegisterView from '../views/customer/RegisterView.vue'
 import ForgetPasswordView from '../views/customer/ForgetPasswordView.vue'
 import DetailProduct from '../views/customer/DetailProduct.vue'
+import PageNotFound from '../views/PageNotFound.vue'
+
 const routerCustomer = [
-  { path: '/home', component: HomeView, name: 'Home', meta: { roleUser: 'customer' } },
+  { path: '/home', component: HomeView, name: 'Home' },
   {
     path: '/book-trading',
-    component: BookTradingView,
-    name: 'BookTrading',
-    meta: { roleUser: 'customer' }
+    components: { routeAdmin: PageNotFound, routeCustomer: BookTradingView },
+    name: 'BookTrading'
   },
   {
     path: '/trading-campaign',
-    component: TradingCampaignView,
-    name: 'TradingCampaign',
-    meta: { roleUser: 'customer' }
+    components: { routeAdmin: PageNotFound, routeCustomer: TradingCampaignView },
+
+    name: 'TradingCampaign'
   },
   {
     path: '/investment-books',
-    component: InvestmentBookView,
-    name: 'InvestmentBooksView',
-    meta: { roleUser: 'customer' }
+    components: { routeAdmin: PageNotFound, routeCustomer: InvestmentBookView },
+    name: 'InvestmentBooksView'
   },
-  { path: '/good-book', component: BookGoodView, name: 'GoodBook', meta: { roleUser: 'customer' } },
+  { path: '/good-book', component: BookGoodView, name: 'GoodBook' },
   {
     path: '/all-book',
-    component: AllBookView,
-    name: 'AllBook',
-    meta: { roleUser: 'customer' }
+    components: { routeAdmin: PageNotFound, routeCustomer: AllBookView },
+    name: 'AllBook'
   },
   {
     path: '/login',
-    component: LoginView,
+    components: { default: LoginView },
     name: 'Login'
   },
   {
     path: '/register',
-    component: RegisterView,
+    components: { default: RegisterView },
     name: 'Register'
   },
   {
     path: '/forget-password',
-    component: ForgetPasswordView,
+    components: { default: ForgetPasswordView },
     name: 'ForgetPassword'
   },
   {
     path: '/detail-product/:id',
-    component: DetailProduct,
-    name: 'DetailProduct',
-    meta: { roleUser: 'customer' }
+    components: { routeAdmin: PageNotFound, routeCustomer: DetailProduct },
+
+    name: 'DetailProduct'
   }
 ]
 export default routerCustomer

@@ -8,8 +8,6 @@ router.beforeEach(async (to, from, next) => {
     next({ name: 'Login' })
     // if user have login
   } else if (!_.isEmpty(userInfo.name)) {
-    console.log(456)
-    console.log(to.name)
     if (
       to.name === 'Login' ||
       to.name === 'Register' ||
@@ -21,13 +19,8 @@ router.beforeEach(async (to, from, next) => {
       } else if (userInfo.role === 'admin') {
         next({ path: '/admin-home' })
       }
-    } else if (
-      to.name === 'PageNotFound' ||
-      to.matched.some((record) => record.meta.roleUser === userInfo.role)
-    ) {
-      next()
     } else {
-      next('/page-not-found')
+      next()
     }
   } else if (to.name === '/') {
     next('/home')

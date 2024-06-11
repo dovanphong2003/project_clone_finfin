@@ -3,7 +3,7 @@
     <CptHeader />
     <CptNavigation />
     <div class="layout-customer__content_main">
-      <router-view />
+      <router-view name="routeCustomer" />
     </div>
     <CptFooter />
   </div>

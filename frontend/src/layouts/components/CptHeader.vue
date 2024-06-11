@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { RouterLink } from 'vue-router'
-import CptModal from '../../common/components/CptModal.vue'
+import CptModalRight from '../../common/components/CptModalRight.vue'
 // import module search book
 import SearchBook from '@/modules/searchBook/SearchBook.vue'
 import ModalSearchBook from '@/modules/searchBook/ModalSearchBook.vue'
@@ -72,24 +72,24 @@ const handleClickCloseModalCart = async () => {
     </div>
   </header>
   <!--modal search book-->
-  <CptModal
+  <CptModalRight
     :title-modal="titleModalSearch"
     :active-modal="activeModalSearch"
     :disable-modal="disableModalSearch"
     @handle-click-close-modal="handleClickCloseModalSearch"
   >
     <ModalSearchBook />
-  </CptModal>
+  </CptModalRight>
 
   <!--modal cart-->
-  <CptModal
+  <CptModalRight
     :title-modal="titleModalCart"
     :active-modal="activeModalCart"
     :disable-modal="disableModalCart"
     @handle-click-close-modal="handleClickCloseModalCart"
   >
     <ModalCart />
-  </CptModal>
+  </CptModalRight>
 </template>
 
 <style lang="scss" scoped>

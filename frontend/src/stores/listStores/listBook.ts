@@ -1,6 +1,6 @@
 import { IBook } from './../../common/interface'
 import { defineStore } from 'pinia'
-import type { Header, Item } from 'vue3-easy-data-table'
+import type { Item } from 'vue3-easy-data-table'
 
 export const useListBookStore = defineStore('listBook', {
   state: () => {

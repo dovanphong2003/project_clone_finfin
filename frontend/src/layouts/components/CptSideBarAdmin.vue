@@ -15,7 +15,7 @@ const LIST_LI_NAVIGATION = [
   {
     name_li: 'Người dùng',
     icon: '/img/icon_navigation/management.png',
-    link: ''
+    link: '/admin-user'
   },
   {
     name_li: 'Vai trò',

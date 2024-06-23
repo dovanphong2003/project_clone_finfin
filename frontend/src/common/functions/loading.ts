@@ -13,7 +13,7 @@ export const handleLoadingNotication = async (
     loader.hide()
     toast(content, {
       type: 'success',
-      position: position ? position : 'bottom-center',
+      position: position as any,
       dangerouslyHTMLString: true
     })
   }, timeMili)

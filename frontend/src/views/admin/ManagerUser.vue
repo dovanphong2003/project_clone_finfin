@@ -1,26 +1,25 @@
 <script lang="ts" setup>
-import type { Header, ClickRowArgument } from 'vue3-easy-data-table'
-import { Ref, ref } from 'vue'
-import CptModalRight from '@/common/components/CptModalRight.vue'
-import { IBook } from '@/common/interface'
-import ModalEditBook from '@/modules/ManagerBook/Modals/ModalEditBook.vue'
-import CreateBook from '@/modules/ManagerBook/CreateBook.vue'
-import { useListBookStore } from '@/stores/listStores/listBook'
-
+import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
+import { useListUserStore } from '@/stores/listStores/listUser'
 // cpt modal right
+import ModalEditUser from '@/modules/ManagerUser/Modals/ModalEditUser.vue'
+import { handleLoadingNotication } from '@/common/functions/loading'
+import CreateUser from '@/modules/ManagerUser/CreateUser.vue'
+import { Ref, ref } from 'vue'
+import type { IUser } from '@/common/interface'
+import CptModalRight from '@/common/components/CptModalRight.vue'
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
-  { text: 'Tên sách', value: 'name', sortable: true, width: 130 },
-  { text: 'Hình ảnh', value: 'image', width: 100 },
-  { text: 'Giá', value: 'price' },
-  { text: 'Thể loại', value: 'category', width: 100 },
-  { text: 'Ngày tạo', value: 'createdAt' },
-  { text: 'Cập nhật mới', value: 'updatedAt' },
-  { text: 'Giảm giá', value: 'promotion', width: 50 },
-  { text: 'Trạng thái', value: 'status', width: 100 }
+  { text: 'Tên', value: 'name', sortable: true, width: 130 },
+  { text: 'Email', value: 'email', width: 100 },
+  { text: 'Tuổi', value: 'age' },
+  { text: 'Giới tính', value: 'gender', width: 100 },
+  { text: 'Vai trò', value: 'role', width: 100 },
+  { text: 'Địa chỉ', value: 'address', width: 200 },
+  { text: 'Ngày tạo', value: 'createdAt', width: 200 },
+  { text: 'Cập nhật mới', value: 'updatedAt', width: 200 }
 ]
-
-const store = useListBookStore()
+const store = useListUserStore()
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -34,21 +33,20 @@ const checkEdit: Ref<boolean> = ref(false)
 const handleClickCloseModalVertical = async () => {
   activeModalVertical.value = false
   disableModalVertical.value = true
-  bookData.value = {
-    id: '',
+  UserData.value = {
     name: '',
-    image: '',
-    price: '0',
-    author: '',
-    category: '',
+    email: '',
+    age: '',
+    gender: '',
+    address: '',
+    role: '',
     createdAt: '',
-    updatedAt: '',
-    status: 'disable'
+    updatedAt: ''
   }
 }
 
-// handle deleteBook
-const handleDeleteBook = () => {
+// handle deleteUser
+const handleDeleteUser = () => {
   checkDelete.value = true
 }
 
@@ -65,30 +63,29 @@ setTimeout(() => {
 }, 1000)
 
 // onclick
-const bookData = ref<IBook>({
-  id: '',
+const UserData = ref<IUser>({
   name: '',
-  image: '',
-  price: '0',
-  author: '',
-  category: '',
+  email: '',
+  age: '',
+  gender: '',
+  address: '',
+  role: '',
   createdAt: '',
-  updatedAt: '',
-  status: 'disable'
+  updatedAt: ''
 })
 const showRow = (val: ClickRowArgument) => {
-  console.log('val: ', val)
   if (checkDelete.value) {
-    store.deleteBook(Number(val.id))
+    handleLoadingNotication('Xóa thành công', 500, 'bottom-center')
+    store.deleteUser(val.email)
     checkDelete.value = false
   } else {
     delete val.indexInCurrentPage
-    bookData.value = val as any
+    UserData.value = val as any
   }
 }
 </script>
 <template>
-  <div class="main-manager_book">
+  <div class="main-manager_User">
     <div class="table">
       <div class="header_table">
         <div class="searching">
@@ -106,10 +103,10 @@ const showRow = (val: ClickRowArgument) => {
             <input placeholder="nhập từ tìm kiếm" type="text" v-model="searchValue" />
           </div>
         </div>
-        <CreateBook />
+        <CreateUser />
       </div>
       <EasyDataTable
-        class="customize-table"
+        table-class-name="customize-table"
         theme-color="#042dc2"
         :headers="headers"
         :items="store.items"
@@ -140,7 +137,7 @@ const showRow = (val: ClickRowArgument) => {
           <h2>Không tìm thấy dữ liệu !</h2>
         </template>
 
-        <!--template for name, example name book,...-->
+        <!--template for name, example name User,...-->
         <template #item-name="{ name }">
           <p
             style="
@@ -156,23 +153,6 @@ const showRow = (val: ClickRowArgument) => {
           </p>
         </template>
 
-        <!--template for image, example image book,...-->
-        <template #item-image="{ image }">
-          <div
-            class="img"
-            style="
-              width: 100%;
-
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              cursor: pointer;
-            "
-          >
-            <img :src="image" alt="hình ảnh sách" style="width: 60px; height: 70px; padding: 6px" />
-          </div>
-        </template>
-
         <!--template for handle ( edit, delete )-->
         <template #item-handle>
           <div class="handle" style="width: 100%; text-align: center">
@@ -183,7 +163,7 @@ const showRow = (val: ClickRowArgument) => {
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
             />
             <img
-              @click="handleDeleteBook"
+              @click="handleDeleteUser"
               src="/icon/delete.png"
               alt="delete"
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
@@ -206,11 +186,11 @@ const showRow = (val: ClickRowArgument) => {
         :disable-modal="disableModalVertical"
         @handle-click-close-modal="handleClickCloseModalVertical"
       >
-        <ModalEditBook
-          v-if="activeModalVertical && bookData.name"
-          :is="ModalEditBook"
-          :objBook="bookData"
-        ></ModalEditBook>
+        <ModalEditUser
+          v-if="activeModalVertical && UserData.name"
+          :is="ModalEditUser"
+          :objUser="UserData"
+        ></ModalEditUser>
       </CptModalRight>
     </div>
   </div>
@@ -242,9 +222,10 @@ const showRow = (val: ClickRowArgument) => {
   }
   .customize-table {
     --easy-table-header-height: 50px;
-    --easy-table-header-font-size: 12px;
+    --easy-table-header-font-size: 13px;
     --easy-table-header-font-color: #252a2b;
     --easy-table-body-row-font-color: #252a2b;
+    --easy-table-body-row-height: 60px;
     img:hover {
       border: 1px solid #0000008e;
     }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, defineProps, onMounted } from 'vue'
-import IBook from '@/common/interface.ts'
+import type { IBook } from '@/common/interface'
 import 'vue3-toastify/dist/index.css'
-import { handleLoading, handleLoadingNotication } from '@/common/functions/loading.ts'
-import { useListBookStore } from '@/stores/listStores/listBook.ts'
+import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
+import { useListBookStore } from '@/stores/listStores/listBook'
 const props = defineProps({
   objBook: {
     type: Object as () => IBook,
@@ -16,9 +16,15 @@ const schema = ref({})
 // use get data of form
 const form$ = ref(null)
 
+interface ImageFile {
+  name: string
+  size: number
+  type: string
+  lastModified: number
+}
 // use upload image
 const preview = ref('')
-const image = ref({})
+const image = ref<Partial<ImageFile>>({}) // Partial để có thể khởi tạo rỗng
 
 const store = useListBookStore()
 const previewImage = (event) => {
@@ -26,8 +32,12 @@ const previewImage = (event) => {
   if (input.files) {
     var reader = new FileReader()
     reader.onload = (e) => {
-      preview.value = e.target.result
+      const result = e.target?.result
+      if (typeof result === 'string') {
+        preview.value = result
+      }
     }
+    console.log('hehe:', input.files[0])
     image.value = input.files[0]
     reader.readAsDataURL(input.files[0])
   }
@@ -35,38 +45,47 @@ const previewImage = (event) => {
 
 // submit form
 const submitForm = () => {
-  const dataForm = { ...form$.value.data, infoImage: image.value, base64Image: preview.value }
-  const dataEdit: IBook = {
-    id: props.objBook.id,
-    name: form$.value.data.name,
-    image:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR053tL-FMuBpFToEfPhMYacjE1cvsATP_S6g&s',
-    price: form$.value.data.price,
-    author: props.objBook.author,
-    category: form$.value.data.category,
-    createdAt: '2022-08-28T17:08:14.008Z',
-    updatedAt: '2030-08-26T17:08:14.008Z',
-    promotion: form$.value.data.promotion + '%',
-    status: form$.value.data.status ? 'active' : 'disable'
+  if (form$.value) {
+    // use send to server
+    const dataForm = {
+      ...(form$.value as any).data,
+      infoImage: image.value,
+      base64Image: preview.value
+    }
+
+    // use send to store
+    const dataEdit: IBook = {
+      id: props.objBook.id,
+      name: (form$.value as any).data.name,
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR053tL-FMuBpFToEfPhMYacjE1cvsATP_S6g&s',
+      price: (form$.value as any).data.price,
+      author: props.objBook.author,
+      category: (form$.value as any).data.category,
+      createdAt: '2022-08-28T17:08:14.008Z',
+      updatedAt: '2030-08-26T17:08:14.008Z',
+      promotion: (form$.value as any).data.promotion + '%',
+      status: (form$.value as any).data.status ? 'active' : 'disable'
+    }
+    store.editBook(dataEdit)
+    // loading...
+    handleLoadingNotication('Cập nhật thành công!', 1000, 'bottom-center')
   }
-  store.editBook(dataEdit)
-  // loading...
-  handleLoadingNotication('Cập nhật thành công!', 1000)
 }
 
 // reset form to natural
 const resetForm = async () => {
-  handleLoading(300)
-  form$.value.update({
+  ;(form$.value as any).update({
     // updates form data
     name: props.objBook.name,
     price: props.objBook.price,
-    promotion: Number(props.objBook.promotion.replace('%', '')),
+    promotion: Number(props.objBook.promotion?.replace('%', '')),
     category: props.objBook.category,
     status: props.objBook.status
   })
   preview.value = ''
   image.value = {}
+  handleLoading(300)
 }
 
 onMounted(() => {
@@ -128,7 +147,7 @@ onMounted(() => {
     promotion: {
       type: 'slider',
       label: 'Giảm giá',
-      default: Number(props.objBook.promotion.replace('%', '')),
+      default: Number(props.objBook.promotion?.replace('%', '')),
       min: 0,
       max: 100
     },

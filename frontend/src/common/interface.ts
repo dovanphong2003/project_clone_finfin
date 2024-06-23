@@ -7,6 +7,17 @@ export interface IBook {
   category: string
   createdAt: string
   updatedAt: string
-  promotion?: string // Thuộc tính promotion có thể không được xác định, nên sử dụng dấu ?
-  status: 'active' | 'disable' // Thuộc tính status chỉ có thể là 'active' hoặc 'disable'
+  promotion?: string
+  status: 'active' | 'disable'
+}
+
+export interface IUser {
+  name: string
+  email: string
+  age: string
+  gender: string
+  address?: string
+  role: string
+  createdAt: string
+  updatedAt: string
 }

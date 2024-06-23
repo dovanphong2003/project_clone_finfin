@@ -1,43 +1,51 @@
 <script setup lang="ts">
-import { ref, defineProps } from 'vue'
-import IBook from '@/common/interface.ts'
+import { ref } from 'vue'
 import 'vue3-toastify/dist/index.css'
-import { handleLoading, handleLoadingNotication } from '@/common/functions/loading.ts'
-import { useListBookStore } from '@/stores/listStores/listBook.ts'
+import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
+import { useListBookStore } from '@/stores/listStores/listBook'
 
 // use get data of form
 const form$ = ref(null)
-
 // use upload image
 const preview = ref('')
-const image = ref({})
-
+const image = ref<Partial<ImageFile>>({}) // Partial để có thể khởi tạo rỗng
 const notiImageEmpty = ref(false)
-
 const store = useListBookStore()
-
+interface ImageFile {
+  name: string
+  size: number
+  type: string
+  lastModified: number
+}
+// fnc
 const previewImage = (event) => {
   var input = event.target
   if (input.files) {
     var reader = new FileReader()
     reader.onload = (e) => {
-      preview.value = e.target.result
+      const result = e.target?.result
+      if (typeof result === 'string') {
+        preview.value = result
+      }
     }
     image.value = input.files[0]
     reader.readAsDataURL(input.files[0])
     notiImageEmpty.value = false
-    form$.value.messageBag.clearPrepended('errors') // clears prepended errors
+    ;(form$.value as any).messageBag.clearPrepended('errors') // clears prepended errors
   }
 }
 
 // submit form
-
 const submitForm = async () => {
   try {
     // Nếu validation
-    image.value.name ? '' : (notiImageEmpty.value = true)
-    const dataForm = { ...form$.value.data, infoImage: image.value, base64Image: preview.value }
-    console.log('haha: ', { ...form$.value.data })
+    if (!image.value.name) notiImageEmpty.value = true
+    const dataForm = {
+      ...(form$.value as any).data,
+      infoImage: image.value,
+      base64Image: preview.value
+    }
+    console.log('haha: ', { ...(form$.value as any).data })
     if (
       dataForm.author &&
       dataForm.base64Image &&
@@ -48,9 +56,9 @@ const submitForm = async () => {
       dataForm.infoImage.name
     ) {
       store.addBook({
-        ...form$.value.data,
-        promotion: form$.value.data.promotion + '%',
-        status: form$.value.data.status ? 'active' : 'disable',
+        ...(form$.value as any).data,
+        promotion: (form$.value as any).data.promotion + '%',
+        status: (form$.value as any).data.status ? 'active' : 'disable',
         createdAt: '2026-02-26T17:08:14.008Z',
         updatedAt: '2028-06-26T17:08:14.008Z',
         image:
@@ -59,11 +67,11 @@ const submitForm = async () => {
       handleLoadingNotication('Tạo thành công!', 800, 'top-right')
       resetForm()
     } else {
-      console.log('form: ', form$.value.data)
-      form$.value.validate()
-      form$.value.validate()
+      ;(form$.value as any)
+        .validate()(form$.value as any)
+        .validate()
       if (notiImageEmpty.value) {
-        form$.value.messageBag.prepend('Ảnh không được để trống')
+        ;(form$.value as any).messageBag.prepend('Ảnh không được để trống')
       }
     }
     // Thực hiện các hành động khác như gửi dữ liệu tới server
@@ -75,8 +83,9 @@ const submitForm = async () => {
 
 // reset form to natural
 const resetForm = async () => {
-  form$.value.reset()
-  form$.value.messageBag.clearPrepended('errors') // clears prepended errors
+  ;(form$.value as any)
+    .reset()(form$.value as any)
+    .messageBag.clearPrepended('errors') // clears prepended errors
   notiImageEmpty.value = false
   preview.value = ''
   image.value = {}
@@ -92,7 +101,8 @@ const resetForm = async () => {
         name="name"
         :rules="['required', 'max:255']"
         :messages="{
-          required: 'Tên sách không được để trống'
+          required: 'Không được bỏ trống tên',
+          max: 'Tên không được vượt quá 255 ký tự'
         }"
         :columns="{
           default: {

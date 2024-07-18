@@ -1,13 +1,17 @@
 <template>
   <div v-if="visible" class="modal-overlay" @click="close">
-    <div ref="modalContent" class="modal-content" @click.stop>
-      <div class="top_modal">
-        <div class="title">
-          {{ title }}
+    <div class="scroll">
+      <div ref="modalContent" class="modal-content" @click.stop>
+        <div class="top_modal">
+          <div class="title">
+            {{ title }}
+          </div>
+          <button class="modal-close" @click="close">&times;</button>
         </div>
-        <button class="modal-close" @click="close">&times;</button>
+        <div class="main_content_modal">
+          <slot></slot>
+        </div>
       </div>
-      <slot></slot>
     </div>
   </div>
 </template>
@@ -21,6 +25,9 @@ const props = defineProps({
   handleShowFalse: {
     type: void Function,
     required: true
+  },
+  handleSetCheckChangeDataFlse: {
+    type: void Function
   },
   title: {
     type: String,
@@ -43,6 +50,9 @@ const close = () => {
   if (modalContent.value) {
     modalContent.value.classList.remove('visible')
     props.handleShowFalse()
+    if (props.handleSetCheckChangeDataFlse) {
+      props.handleSetCheckChangeDataFlse()
+    }
   }
   setTimeout(() => {
     visible.value = false
@@ -77,13 +87,15 @@ onMounted(() => {
   align-items: center;
   z-index: 10;
   transition: opacity 0.3s ease;
+  .scroll {
+    overflow: auto;
+    max-height: 94vh;
+    border-radius: 10px;
+  }
 }
 
 .modal-content {
   background: white;
-  padding: 20px;
-  padding: 20px 60px;
-  border-radius: 10px;
   transform: scale(0.8);
   opacity: 0;
   transition:
@@ -93,6 +105,16 @@ onMounted(() => {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 20px;
+    .title {
+      font-size: 16px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+  .main_content_modal {
+    padding: 20px;
+    padding: 20px 60px;
   }
 }
 

@@ -225,14 +225,12 @@ export const useListUserStore = defineStore('listUser', {
   actions: {
     // since we rely on `this`, we cannot use an arrow function
     addUser(val: IUser) {
-      console.log('data: ', val)
       this.items.push(val)
     },
     deleteUser(email: string) {
       this.items = this.items.filter((item) => item.email !== email)
     },
     editUser(val: IUser) {
-      console.log('val: ', val)
       const index = this.items.findIndex((item) => item.email === val.email)
       if (index !== -1) {
         this.items[index] = val

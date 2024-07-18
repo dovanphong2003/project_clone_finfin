@@ -9,3 +9,22 @@
   -webkit-box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
   box-shadow: 0 0 35px 0 rgba(154, 161, 171, 0.15);
 }
+.hidden {
+  display: none !important;
+}
+.rotate-90 {
+  transform: rotate(90deg);
+  transition: transform 0.5s ease; /* Thêm hiệu ứng chuyển tiếp */
+}
+.blue {
+  color: blue !important;
+}
+.green {
+  color: green !important;
+}
+.black {
+  color: black !important;
+}
+.red {
+  color: red !important;
+}

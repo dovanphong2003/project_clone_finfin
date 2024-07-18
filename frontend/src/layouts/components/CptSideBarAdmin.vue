@@ -20,7 +20,7 @@ const LIST_LI_NAVIGATION = [
   {
     name_li: 'Vai trò',
     icon: '/img/icon_navigation/role.png',
-    link: ''
+    link: '/admin-role'
   },
   {
     name_li: 'Phân quyền',

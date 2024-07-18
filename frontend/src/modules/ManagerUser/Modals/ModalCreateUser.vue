@@ -139,7 +139,6 @@ const formatFormData = ({ name, password, email, age, gender, role, address }) =
         :rules="['nullable']"
         placeholder="Nhập địa chỉ..."
       />
-      <StaticElement name="divider_4" tag="hr" />
       <ButtonElement
         name="submit"
         :submits="true"

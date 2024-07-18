@@ -9,7 +9,7 @@ import { onMounted } from 'vue'
 const router = useRouter()
 const title: Ref<string> = ref('Loading...')
 router.afterEach((to) => {
-  title.value = to.meta.title || 'Loading...'
+  title.value = (to.meta.title as any) || 'Loading...'
 })
 </script>
 <template>
@@ -19,7 +19,7 @@ router.afterEach((to) => {
       <div class="side_bar">
         <CptSideBarAdmin />
       </div>
-      <div @click="handleOnclick" class="layout-admin__content">
+      <div class="layout-admin__content">
         <CptTitleViewAdmin :title="title" />
         <router-view name="routeAdmin" />
       </div>

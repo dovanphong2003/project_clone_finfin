@@ -361,14 +361,12 @@ export const useListBookStore = defineStore('listBook', {
   actions: {
     // since we rely on `this`, we cannot use an arrow function
     addBook(val: IBook) {
-      console.log('data: ', val)
       this.items.push({ id: Math.floor(100000 + Math.random() * 900000), ...val })
     },
     deleteBook(id: Number) {
       this.items = this.items.filter((item) => item.id !== id)
     },
     editBook(val: IBook) {
-      console.log('val: ', val)
       const index = this.items.findIndex((item) => item.id === val.id)
       if (index !== -1) {
         this.items[index] = val

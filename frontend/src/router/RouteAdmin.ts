@@ -2,6 +2,7 @@ import HomeView from '../views/admin/HomeView.vue'
 import PageNotFound from '../views/PageNotFound.vue'
 import ManagerBook from '../views/admin/ManagerBook.vue'
 import ManagerUser from '../views/admin/ManagerUser.vue'
+import ManagerRole from '@/views/admin/ManagerRole.vue'
 // if route admin --- checkAuth = true, check role = admin
 const routerAdmin = [
   {
@@ -21,6 +22,12 @@ const routerAdmin = [
     components: { routeAdmin: ManagerUser, routeCustomer: PageNotFound },
     name: 'ManagerUser',
     meta: { checkAuth: true, title: 'Quản lí người dùng' }
+  },
+  {
+    path: '/admin-role',
+    components: { routeAdmin: ManagerRole, routeCustomer: PageNotFound },
+    name: 'ManagerRole',
+    meta: { checkAuth: true, title: 'Quản lí vai trò người dùng' }
   }
 ]
 export default routerAdmin

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { useUserInfoStore } from '@/stores/listStores/userInfo'
-import router from '../router/index.ts'
+import router from '../router/index'
 router.beforeEach(async (to, from, next) => {
   const userInfo = useUserInfoStore()
   // if user must login

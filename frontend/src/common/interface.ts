@@ -21,20 +21,21 @@ export interface IUser {
   createdAt: string
   updatedAt: string
 }
-// export interface IDetailPermission {
-//   type: string
-//   api: string
-//   des: string
-// }
-// export interface IPermission {
-//   permissionName: string
-//   dataPermission: IDetailPermission[]
-// }
+
 export interface IRole {
   nameRole: string
   status: boolean
   description: string
   objPermission: string[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface IPermission {
+  name: string
+  api: string
+  method: string
+  module: string
   createdAt: string
   updatedAt: string
 }

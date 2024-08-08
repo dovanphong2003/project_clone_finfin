@@ -5,27 +5,27 @@ const LIST_LI_NAVIGATION = [
   {
     name_li: 'Bảng điều khiển',
     icon: '/img/dashboard.png',
-    link: '/admin-home'
+    link: 'AdminHome'
   },
   {
     name_li: 'Quản lí sách',
     icon: '/img/icon_navigation/book.png',
-    link: '/admin-book'
+    link: 'ManagerBook'
   },
   {
     name_li: 'Người dùng',
     icon: '/img/icon_navigation/management.png',
-    link: '/admin-user'
+    link: 'ManagerUser'
   },
   {
     name_li: 'Vai trò',
     icon: '/img/icon_navigation/role.png',
-    link: '/admin-role'
+    link: 'ManagerRole'
   },
   {
-    name_li: 'Phân quyền',
+    name_li: 'Quyền Hạn',
     icon: '/img/icon_navigation/key.png',
-    link: ''
+    link: 'ManagerPermission'
   },
   { name_li: 'Mã giảm giá', icon: '/img/icon_navigation/voucher.png', link: '' }
 ]
@@ -40,7 +40,7 @@ const LIST_LI_NAVIGATION = [
       <p>ĐIỀU HƯỚNG</p>
       <ul class="list_menu">
         <li v-for="(item, index) in LIST_LI_NAVIGATION" :key="index">
-          <RouterLink class="route_link" :to="item.link">
+          <RouterLink class="route_link" :to="{ name: item.link }">
             <div class="content--icon">
               <img :src="item.icon" alt="" />
               <span>

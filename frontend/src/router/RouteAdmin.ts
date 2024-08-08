@@ -3,6 +3,7 @@ import PageNotFound from '../views/PageNotFound.vue'
 import ManagerBook from '../views/admin/ManagerBook.vue'
 import ManagerUser from '../views/admin/ManagerUser.vue'
 import ManagerRole from '@/views/admin/ManagerRole.vue'
+import ManagerPermission from '@/views/admin/ManagerPermission.vue'
 // if route admin --- checkAuth = true, check role = admin
 const routerAdmin = [
   {
@@ -28,6 +29,12 @@ const routerAdmin = [
     components: { routeAdmin: ManagerRole, routeCustomer: PageNotFound },
     name: 'ManagerRole',
     meta: { checkAuth: true, title: 'Quản lí vai trò người dùng' }
+  },
+  {
+    path: '/admin-permission',
+    components: { routeAdmin: ManagerPermission, routeCustomer: PageNotFound },
+    name: 'ManagerPermission',
+    meta: { checkAuth: true, title: 'Quản lí danh sách quyền hạn' }
   }
 ]
 export default routerAdmin

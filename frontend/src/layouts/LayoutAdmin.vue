@@ -5,7 +5,6 @@ import CptSideBarAdmin from './components/CptSideBarAdmin.vue'
 import CptTitleViewAdmin from '@/common/components/CptTitleViewAdmin.vue'
 import { ref, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
 const router = useRouter()
 const title: Ref<string> = ref('Loading...')
 router.afterEach((to) => {

@@ -4,6 +4,7 @@ import ManagerBook from '../views/admin/ManagerBook.vue'
 import ManagerUser from '../views/admin/ManagerUser.vue'
 import ManagerRole from '@/views/admin/ManagerRole.vue'
 import ManagerPermission from '@/views/admin/ManagerPermission.vue'
+import ManagerCoupon from '@/views/admin/ManagerCoupon.vue'
 // if route admin --- checkAuth = true, check role = admin
 const routerAdmin = [
   {
@@ -35,6 +36,12 @@ const routerAdmin = [
     components: { routeAdmin: ManagerPermission, routeCustomer: PageNotFound },
     name: 'ManagerPermission',
     meta: { checkAuth: true, title: 'Quản lí danh sách quyền hạn' }
+  },
+  {
+    path: '/admin-coupon',
+    components: { routeAdmin: ManagerCoupon, routeCustomer: PageNotFound },
+    name: 'ManagerCoupon',
+    meta: { checkAuth: true, title: 'Quản lí danh sách mã giảm giá' }
   }
 ]
 export default routerAdmin

@@ -1,23 +1,25 @@
 <script lang="ts" setup>
 import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
 // cpt modal right
-import ModalEditPermission from '@/modules/ManagerPermission/Modals/ModalEditPermission.vue'
+import ModalEditCoupon from '@/modules/ManagerCoupon/Modals/ModalEditCoupon.vue'
 import { handleLoadingNotication } from '@/common/functions/loading'
 import { ref, type Ref } from 'vue'
-import type { IPermission } from '@/common/interface'
+import type { ICoupon } from '@/common/interface'
 import CptModalRight from '@/common/components/CptModalRight.vue'
-import { useListPermissionStore } from '@/stores/listStores/listPermission'
-import CreatePermission from '@/modules/ManagerPermission/CreatePermission.vue'
+import { useListCouponStore } from '@/stores/listStores/listCoupon'
+import CreateCoupon from '@/modules/ManagerCoupon/CreateCoupon.vue'
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
-  { text: 'Tên', value: 'name', sortable: true, width: 130 },
-  { text: 'API', value: 'api' },
-  { text: 'Phương Thức', value: 'method', width: 100 },
-  { text: 'Module', value: 'module', width: 100 },
+  { text: 'Mã giảm giá', value: 'coupon_code', sortable: true, width: 130 },
+  { text: 'Giảm giá', value: 'discount', width: 100 },
+  { text: 'Số lượng', value: 'quantity', width: 100 },
+  { text: 'Trạng thái', value: 'status', width: 100 },
+  { text: 'Truy cập', value: 'access', width: 100 },
   { text: 'Ngày tạo', value: 'createdAt', width: 200 },
+  { text: 'Ngày hết hạn', value: 'expiry_date', width: 200 },
   { text: 'Cập nhật mới', value: 'updatedAt', width: 200 }
 ]
-const store = useListPermissionStore()
+const store = useListCouponStore()
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -30,29 +32,35 @@ const checkDelete: Ref<boolean> = ref(false)
 const checkEdit: Ref<boolean> = ref(false)
 
 // onclick
-const UserData = ref<IPermission>({
-  name: '',
-  api: '',
-  method: '',
-  module: '',
-  createdAt: '',
-  updatedAt: ''
+const CouponData = ref<ICoupon>({
+  coupon_id: '',
+  coupon_code: '',
+  discount: 0,
+  quantity: 0,
+  status: 'active',
+  access: 'private',
+  expiry_date: new Date('2024-01-01'),
+  createdAt: new Date('2023-09-01'),
+  updatedAt: new Date('2023-09-01')
 })
 const handleClickCloseModalVertical = async () => {
   activeModalVertical.value = false
   disableModalVertical.value = true
-  UserData.value = {
-    name: '',
-    api: '',
-    method: '',
-    module: '',
-    createdAt: '',
-    updatedAt: ''
+  CouponData.value = {
+    coupon_id: '',
+    coupon_code: '',
+    discount: 0,
+    quantity: 0,
+    status: 'active',
+    access: 'private',
+    expiry_date: new Date('2024-01-01'),
+    createdAt: new Date('2023-09-01'),
+    updatedAt: new Date('2023-09-01')
   }
 }
 
-// handle deletePermission
-const handleDeletePermission = () => {
+// handle deleteCoupon
+const handleDeleteCoupon = () => {
   checkDelete.value = true
 }
 
@@ -69,13 +77,14 @@ setTimeout(() => {
 }, 1000)
 
 const showRow = (val: ClickRowArgument) => {
+  console.log('show: ', val)
   if (checkDelete.value) {
     handleLoadingNotication('Xóa thành công', 500, 'bottom-center')
-    store.deletePermission(val.email)
+    store.deleteCoupon(val.coupon_code)
     checkDelete.value = false
   } else {
     delete val.indexInCurrentPage
-    UserData.value = val as any
+    CouponData.value = val as any
   }
 }
 </script>
@@ -98,7 +107,7 @@ const showRow = (val: ClickRowArgument) => {
             <input placeholder="nhập từ tìm kiếm" type="text" v-model="searchValue" />
           </div>
         </div>
-        <CreatePermission />
+        <CreateCoupon />
       </div>
       <EasyDataTable
         table-class-name="customize-table"
@@ -133,7 +142,7 @@ const showRow = (val: ClickRowArgument) => {
         </template>
 
         <!--template for name, example name User,...-->
-        <template #item-name="{ name }">
+        <template #item-coupon_code="{ coupon_code }">
           <p
             style="
               display: -webkit-box;
@@ -142,40 +151,31 @@ const showRow = (val: ClickRowArgument) => {
               overflow: hidden;
               text-overflow: ellipsis;
               font-weight: 500;
-              text-align: left;
+              text-align: center;
             "
           >
-            {{ name }}
+            {{ coupon_code }}
           </p>
         </template>
-        <template #item-api="{ api }">
-          <p
-            style="
-              display: -webkit-box;
-              -webkit-box-orient: vertical;
-              -webkit-line-clamp: 2;
-              overflow: hidden;
-              max-width: 500px;
-              text-overflow: ellipsis;
-              text-align: left;
-              font-weight: 500;
-            "
-          >
-            {{ api }}
-          </p>
+        <template #item-status="{ status }">
+          <div class="status">
+            <div
+              :class="[status == 'active' ? 'active' : status == 'expired' ? 'expired' : 'error']"
+              style="padding: 4px 20px"
+            >
+              {{ status == 'active' ? 'Active' : status == 'expired' ? 'expired' : 'disable' }}
+            </div>
+          </div>
         </template>
-        <template #item-method="{ method }">
-          <p
-            style="font-weight: 800"
-            :class="{
-              blue: method === 'GET',
-              green: method === 'POST',
-              black: method === 'PATCH',
-              red: method === 'DELETE'
-            }"
-          >
-            {{ method }}
-          </p>
+        <template #item-access="{ access }">
+          <div class="access">
+            <div :class="[access == 'public' ? 'public' : 'private']" style="padding: 4px 20px">
+              {{ access == 'public' ? 'Public' : 'Private' }}
+            </div>
+          </div>
+        </template>
+        <template #item-discount="{ discount }">
+          <p style="font-weight: 600">{{ discount }}%</p>
         </template>
         <!--template for handle ( edit, delete )-->
         <template #item-handle>
@@ -187,7 +187,7 @@ const showRow = (val: ClickRowArgument) => {
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
             />
             <img
-              @click="handleDeletePermission"
+              @click="handleDeleteCoupon"
               src="/icon/delete.png"
               alt="delete"
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
@@ -201,11 +201,11 @@ const showRow = (val: ClickRowArgument) => {
         :disable-modal="disableModalVertical"
         @handle-click-close-modal="handleClickCloseModalVertical"
       >
-        <ModalEditPermission
-          v-if="activeModalVertical && UserData.name"
-          :is="ModalEditPermission"
-          :objPermission="UserData"
-        ></ModalEditPermission>
+        <ModalEditCoupon
+          v-if="activeModalVertical && CouponData.coupon_code"
+          :is="ModalEditCoupon"
+          :objCoupon="CouponData"
+        ></ModalEditCoupon>
       </CptModalRight>
     </div>
   </div>
@@ -261,6 +261,27 @@ const showRow = (val: ClickRowArgument) => {
         border-radius: 4px;
         background-color: rgba(10, 207, 151, 0.18);
         border: 1px solid #00bc87;
+      }
+      .expired {
+        color: #ffffff;
+        border-radius: 4px;
+        background-color: rgb(255, 17, 0);
+        border: 1px solid red;
+      }
+    }
+    .access {
+      text-align: center;
+      .public {
+        color: #0acf97;
+        border-radius: 4px;
+        background-color: rgba(10, 207, 151, 0.18);
+        border: 1px solid #00bc87;
+      }
+      .private {
+        color: #cf2b0a;
+        border-radius: 4px;
+        background-color: rgba(207, 23, 10, 0.18);
+        border: 1px solid red;
       }
     }
   }

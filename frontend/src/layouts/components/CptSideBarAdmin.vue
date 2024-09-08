@@ -27,7 +27,7 @@ const LIST_LI_NAVIGATION = [
     icon: '/img/icon_navigation/key.png',
     link: 'ManagerPermission'
   },
-  { name_li: 'Mã giảm giá', icon: '/img/icon_navigation/voucher.png', link: '' }
+  { name_li: 'Mã giảm giá', icon: '/img/icon_navigation/voucher.png', link: 'ManagerCoupon' }
 ]
 </script>
 <template>

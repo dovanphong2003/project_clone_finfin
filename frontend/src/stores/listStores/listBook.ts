@@ -1,4 +1,4 @@
-import { IBook } from './../../common/interface'
+import { type IBook } from './../../common/interface'
 import { defineStore } from 'pinia'
 import type { Item } from 'vue3-easy-data-table'
 

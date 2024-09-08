@@ -1,6 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router'
-import routerCustomer from './RouteCustomer.ts'
-import routerAdmin from './RouteAdmin.ts'
+import routerCustomer from './RouteCustomer'
+import routerAdmin from './RouteAdmin'
 import PageNotFound from '../views/PageNotFound.vue'
 const routes = [
   { path: '/', redirect: '/home' },
@@ -8,7 +8,7 @@ const routes = [
   ...routerAdmin,
   { path: '/page-not-found', component: PageNotFound, name: 'PageNotFound' },
   { path: '/:pathMatch(.*)*', redirect: '/page-not-found' }
-]
+] as any
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes

@@ -39,3 +39,15 @@ export interface IPermission {
   createdAt: string
   updatedAt: string
 }
+
+export interface ICoupon {
+  coupon_id: string
+  coupon_code: string
+  discount: number
+  quantity: number
+  status: 'active' | 'expired' | 'disable'
+  access: 'public' | 'private'
+  expiry_date: Date
+  createdAt: Date
+  updatedAt: Date
+}

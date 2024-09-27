@@ -37,16 +37,17 @@ router.afterEach((to) => {
     margin-right: auto;
     margin-left: auto;
     display: flex;
+    justify-content: space-between;
     .side_bar {
       width: 22%;
       min-height: 500px;
       border-right: 1px solid #eaeaea8a;
     }
     .layout-admin__content {
-      width: 78%;
+      width: 76%;
       min-height: 100vh;
       padding: 20px;
-      padding: 0px 0px 0px 30px;
+      padding: 0px 0px 0px 0px;
     }
   }
 }

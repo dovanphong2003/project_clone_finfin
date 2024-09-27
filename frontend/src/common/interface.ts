@@ -2,6 +2,7 @@ export interface IBook {
   id: string
   name: string
   image: string
+  content: string
   price: string
   author: string
   category: string

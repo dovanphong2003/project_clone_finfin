@@ -33,6 +33,21 @@ export const handleLoadingNoticationError = async (
     })
   }, timeMili)
 }
+export const handleLoadingNoticationWarning = async (
+  content: string,
+  timeMili: number,
+  position: string
+) => {
+  const loader = $loading.show({})
+  await setTimeout(() => {
+    loader.hide()
+    toast(content, {
+      type: 'warning',
+      position: position as any,
+      dangerouslyHTMLString: true
+    })
+  }, timeMili)
+}
 export const handleLoading = async (timeMili: number) => {
   const loader = $loading.show({})
   await setTimeout(() => {

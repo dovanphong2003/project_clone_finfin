@@ -13,6 +13,11 @@ const LIST_LI_NAVIGATION = [
     link: 'ManagerBook'
   },
   {
+    name_li: 'Quản lí nội dung sách',
+    icon: '/img/icon_navigation/copywriting.png',
+    link: 'ManagerBook'
+  },
+  {
     name_li: 'Người dùng',
     icon: '/img/icon_navigation/management.png',
     link: 'ManagerUser'

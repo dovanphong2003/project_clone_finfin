@@ -57,6 +57,7 @@ const submitForm = () => {
     const dataEdit: IBook = {
       id: props.objBook.id,
       name: (form$.value as any).data.name,
+      content: props.objBook.content,
       image:
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR053tL-FMuBpFToEfPhMYacjE1cvsATP_S6g&s',
       price: (form$.value as any).data.price,

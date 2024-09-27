@@ -168,6 +168,13 @@ const resetForm = async () => {
           required: 'Thể loại không được để trống'
         }"
       />
+      <TextElement
+        name="content"
+        label="Nội dung"
+        :columns="{
+          container: 12
+        }"
+      />
       <ToggleElement
         name="status"
         :columns="{

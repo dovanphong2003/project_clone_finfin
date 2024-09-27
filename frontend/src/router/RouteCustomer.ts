@@ -11,7 +11,11 @@ import DetailProduct from '../views/customer/DetailProduct.vue'
 import PageNotFound from '../views/PageNotFound.vue'
 
 const routerCustomer = [
-  { path: '/home', component: HomeView, name: 'Home' },
+  {
+    path: '/home',
+    components: { routeAdmin: PageNotFound, routeCustomer: HomeView },
+    name: 'Home'
+  },
   {
     path: '/book-trading',
     components: { routeAdmin: PageNotFound, routeCustomer: BookTradingView },
@@ -28,7 +32,11 @@ const routerCustomer = [
     components: { routeAdmin: PageNotFound, routeCustomer: InvestmentBookView },
     name: 'InvestmentBooksView'
   },
-  { path: '/good-book', component: BookGoodView, name: 'GoodBook' },
+  {
+    path: '/good-book',
+    components: { routeAdmin: PageNotFound, routeCustomer: BookGoodView },
+    name: 'GoodBook'
+  },
   {
     path: '/all-book',
     components: { routeAdmin: PageNotFound, routeCustomer: AllBookView },
@@ -36,23 +44,22 @@ const routerCustomer = [
   },
   {
     path: '/login',
-    components: { default: LoginView },
+    components: { routeAdmin: PageNotFound, routeCustomer: LoginView },
     name: 'Login'
   },
   {
     path: '/register',
-    components: { default: RegisterView },
+    components: { routeAdmin: PageNotFound, routeCustomer: RegisterView },
     name: 'Register'
   },
   {
     path: '/forget-password',
-    components: { default: ForgetPasswordView },
+    components: { routeAdmin: PageNotFound, routeCustomer: ForgetPasswordView },
     name: 'ForgetPassword'
   },
   {
     path: '/detail-product/:id',
     components: { routeAdmin: PageNotFound, routeCustomer: DetailProduct },
-
     name: 'DetailProduct'
   }
 ]

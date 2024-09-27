@@ -5,6 +5,7 @@
     theme="snow"
     contentType="html"
     @textChange="$emit('changeContentCode', content)"
+    class="custom-quill-editor"
   />
 </template>
 
@@ -17,9 +18,13 @@ import '@vueup/vue-quill/dist/vue-quill.bubble.css'
 import ImageUploader from 'quill-image-uploader'
 import QuillBetterTable from 'quill-better-table'
 
-defineProps({
+const props = defineProps({
   changeContentCode: {
     type: Function,
+    required: true
+  },
+  contentDefault: {
+    type: String,
     required: true
   }
 })
@@ -30,9 +35,9 @@ Quill.register(
   true
 )
 
-const content = ref('')
+const content = ref(props.contentDefault)
 </script>
-<style>
+<style lang="scss">
 h2 {
   color: aqua;
 }

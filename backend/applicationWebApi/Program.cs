@@ -1,3 +1,9 @@
+﻿using BookStore.DAL.UnitOfWorks;
+using BookStore.DAL.Repositories;
+using BookStore.BLL.Services;
+using BookStore.DataAccess.DataContext;
+using BookStore.DAL;
+using BookStore.DataAccess;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +14,13 @@ builder.Services.AddSwaggerGen();
 
 // Add Authorization (optional)
 builder.Services.AddAuthorization();
+
+// add dependency injection
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddDataAccessLayer();
+builder.Services.AddDataAccess();
+
+
 
 var app = builder.Build();
 

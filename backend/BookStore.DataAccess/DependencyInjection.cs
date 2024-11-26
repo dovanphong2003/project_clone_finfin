@@ -1,7 +1,17 @@
-﻿namespace BookStore.DataAccess
+﻿using BookStore.DataAccess.DataContext;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Data.SqlClient;
+namespace BookStore.DataAccess
 {
-    public class DependencyInjection
+    public static class DependencyInjection
     {
-
+        public static IServiceCollection AddDataAccess(this IServiceCollection services)
+        {
+            // Đăng ký DbContext
+            services.AddSingleton<DbContext>();
+            services.AddSingleton<SqlConnection>();
+            //services.AddSingleton<SqlTransaction>();
+            return services;
+        }
     }
 }

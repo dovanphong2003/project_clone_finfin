@@ -16,7 +16,7 @@
     "@types/lodash": "^4.17.0",
     "@vueform/vueform": "^1.9.5",
     "@vueup/vue-quill": "1.0.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.8",
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",
     "quill-better-table": "1.2.10",

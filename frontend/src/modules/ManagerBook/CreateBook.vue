@@ -1,4 +1,5 @@
 <template>
+  <div @click="handleTest" class="action">Button test call api</div>
   <div @click="showModal = true" class="action">
     <button><span>+</span>Thêm mới</button>
   </div>
@@ -10,7 +11,19 @@
 import CptModalCenter from '@/common/components/CptModalCenter.vue'
 import ModalCreateBook from '@/modules/ManagerBook/Modals/ModalCreateBook.vue'
 import { ref } from 'vue'
+import axiosInstance from '@/services/axiosService'
 
+const handleTest = () => {
+  console.log('test call api')
+  axiosInstance
+    .get('/api/Book')
+    .then((response) => {
+      console.log(response.data)
+    })
+    .catch((error) => {
+      console.error('Lỗi khi gọi API:', error)
+    })
+}
 const showModal = ref(false)
 
 // handle set show = false;

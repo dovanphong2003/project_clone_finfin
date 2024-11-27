@@ -10,8 +10,12 @@ import vueformConfig from '../vueform.config'
 import Vue3Toastify, { type ToastContainerOptions } from 'vue3-toastify'
 import { LoadingPlugin } from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/css/index.css'
+
+// config axios
+
 const pinia = createPinia()
 const app = createApp(App)
+
 app.component('EasyDataTable', Vue3EasyDataTable)
 app.use(pinia)
 app.use(router)

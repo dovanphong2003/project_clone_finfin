@@ -26,7 +26,7 @@ const props = defineProps({
     type: void Function,
     required: true
   },
-  handleSetCheckChangeDataFlse: {
+  handleSetCheckChangeDataFalse: {
     type: void Function
   },
   title: {
@@ -50,8 +50,8 @@ const close = () => {
   if (modalContent.value) {
     modalContent.value.classList.remove('visible')
     props.handleShowFalse()
-    if (props.handleSetCheckChangeDataFlse) {
-      props.handleSetCheckChangeDataFlse()
+    if (props.handleSetCheckChangeDataFalse) {
+      props.handleSetCheckChangeDataFalse()
     }
   }
   setTimeout(() => {

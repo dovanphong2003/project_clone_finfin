@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useUserInfoStore = defineStore('userInfo', {
   state: () => ({
     name: 'DO VAN PHONG',
-    role: 'customer'
+    role: 'admin'
   }),
   getters: {
     // Define your getters here

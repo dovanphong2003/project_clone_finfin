@@ -46,7 +46,7 @@ const RoleData = ref<IRole>({
 })
 // onclickRow
 const checkChangeData: Ref<boolean> = ref(false)
-const handleSetCheckChangeDataFlse = () => {
+const handleSetCheckChangeDataFalse = () => {
   checkChangeData.value = false
 }
 const showRow = (val: ClickRowArgument) => {
@@ -158,7 +158,7 @@ const showRow = (val: ClickRowArgument) => {
     </div>
   </div>
   <CptModalCenter
-    :handleSetCheckChangeDataFlse="handleSetCheckChangeDataFlse"
+    :handleSetCheckChangeDataFalse="handleSetCheckChangeDataFalse"
     title="Chỉnh sửa Role"
     :show="showModal"
     :handleShowFalse="handleShowFalse"

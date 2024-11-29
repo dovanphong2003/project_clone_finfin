@@ -10,10 +10,6 @@ const props = defineProps<{
 }>()
 
 const store = useListBookStore()
-
-const changeContentCode = (content: string) => {
-  contentCode.value = content
-}
 const contentBookOfProps: Ref<string> = ref(props.bookData.content)
 const contentCode: Ref<string> = ref(props.bookData.content)
 const handleEditContentBook = () => {
@@ -21,6 +17,8 @@ const handleEditContentBook = () => {
     store.editBook({ ...props.bookData, content: contentCode.value })
     handleLoadingNotication('Cập nhật thành công!', 1000, 'top-center')
     contentBookOfProps.value = contentCode.value
+    console.log('content code: ', contentCode)
+    console.log(store.items)
   } else {
     handleLoadingNoticationWarning('Không có gì thay đổi', 1000, 'top-center')
   }
@@ -34,7 +32,7 @@ const handleEditContentBook = () => {
     <h1>{{ bookData.name }}</h1>
     <div class="main_content">
       <div class="editor_content">
-        <CptQuill :contentDefault="contentCode" @changeContentCode="changeContentCode" />
+        <CptQuill v-model:content="contentCode" />
       </div>
       <div v-html="contentCode" class="content_book"></div>
     </div>

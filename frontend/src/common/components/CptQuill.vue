@@ -4,38 +4,24 @@
     toolbar="full"
     theme="snow"
     contentType="html"
-    @textChange="$emit('changeContentCode', content)"
     class="custom-quill-editor"
+    @update:content="handleContentUpdate"
   />
 </template>
 
 <script setup>
-import axios from 'axios'
 import { ref } from 'vue'
-import { QuillEditor, Quill } from '@vueup/vue-quill'
+import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import '@vueup/vue-quill/dist/vue-quill.bubble.css'
-import ImageUploader from 'quill-image-uploader'
-import QuillBetterTable from 'quill-better-table'
 
-const props = defineProps({
-  changeContentCode: {
-    type: Function,
-    required: true
-  },
-  contentDefault: {
-    type: String,
-    required: true
-  }
-})
-Quill.register(
-  {
-    'modules/better-table': QuillBetterTable
-  },
-  true
-)
+// content là một chuỗi HTML
+const content = ref('<p></p>')
 
-const content = ref(props.contentDefault)
+// Hàm để xử lý sự thay đổi khi nội dung thay đổi
+const handleContentUpdate = (newContent) => {
+  content.value = newContent
+}
 </script>
 <style lang="scss">
 h2 {

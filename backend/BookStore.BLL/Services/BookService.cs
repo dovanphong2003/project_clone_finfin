@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BookStore.DAL.UnitOfWorks;
 using BookStore.DTO.DTOs;
+using BookStore.Shared.Response;
 namespace BookStore.BLL.Services
 {
     public class BookService : IBookService
@@ -16,16 +17,11 @@ namespace BookStore.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<BookDTO> GetAllBooks()
+        public async Task<Result<IEnumerable<BookDTO>>> GetAllBooks()
         {
-            var books = _unitOfWork.BookRepository.GetAll();
-            return books.Select(b => new BookDTO { id = b.id, title = b.title, author = b.author });
-            //        return new List<BookDTO>
-            //{
-            //    new BookDTO { Id = 123456, Title = "sach hay viet nam", Author = "sach hay viet nam" },
-            //    new BookDTO { Id = 555555, Title = "sach hay viet nam", Author = "sach hay viet nam" },
-            //    new BookDTO { Id = 888888, Title = "sach hay viet nam", Author = "sach hay viet nam" },
-            //};
+            var books = await _unitOfWork.BookRepository.GetAllAsync();
+            var bookDTOs = books.Select(b => new BookDTO { id = b.id, title = b.title });
+            return Result.Success(bookDTOs);
         }
     }
 

@@ -13,10 +13,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")  // Cho phép origin này
-              .AllowAnyHeader()                    // Cho phép bất kỳ header nào
-              .AllowAnyMethod()                    // Cho phép tất cả các HTTP methods (GET, POST, PUT, DELETE,...)
-              .AllowCredentials();                 // Cho phép sử dụng credentials (cookies, HTTP authentication,...)
+        policy.WithOrigins("http://localhost:5173") 
+              .AllowAnyHeader()                    
+              .AllowAnyMethod()                   
+              .AllowCredentials(); 
     });
 });
 

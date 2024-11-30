@@ -10,6 +10,6 @@ namespace BookStore.DTO.DTOs
     {
         public long id { get; set; }          // Mã định danh của sách
         public string title { get; set; }   // Tên sách
-        public string author { get; set; }  // Tác giả
+
     }
 }

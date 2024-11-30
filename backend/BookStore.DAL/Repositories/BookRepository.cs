@@ -19,7 +19,7 @@ namespace BookStore.DAL.Repositories
             _transaction = transaction;
         }
 
-        public IEnumerable<Book> GetAll()
+        public async Task<IEnumerable<Book>> GetAllAsync()
         {
             var books = new List<Book>();
             var query = "SELECT * FROM Book";
@@ -29,16 +29,15 @@ namespace BookStore.DAL.Repositories
                 using (var command = new SqlCommand(query, _connection))
                 {
                     command.Transaction = _transaction;
-                    using (var reader = command.ExecuteReader())
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        while (reader.Read())
+                        while (await reader.ReadAsync())
                         {
                             var book = new Book
                             {
                                 id = reader.GetInt64(0),          // Cột 0: Id
                                 title = reader.GetString(1),      // Cột 1: Title
-                                author = reader.GetString(2),     // Cột 2: Author
-                                type = reader.GetString(3),     // Cột 3: Price
+                               
                             };
                             books.Add(book);
                         }

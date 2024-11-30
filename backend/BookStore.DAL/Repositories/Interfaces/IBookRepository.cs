@@ -8,7 +8,7 @@ namespace BookStore.DAL.Repositories
 {
     public interface IBookRepository
     {
-        IEnumerable<Book> GetAll();
+        Task<IEnumerable<Book>> GetAllAsync();
     }
 
 }

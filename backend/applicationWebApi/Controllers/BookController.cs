@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BookStore.BLL.Services;
+using BookStore.Shared.Response;
 namespace BookStore.API.Controllers
 {
     [Route("api/[controller]")]
@@ -15,10 +16,10 @@ namespace BookStore.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllBooks()
+        public async Task<IActionResult> GetAllBooks()
         {
-            var books = _bookService.GetAllBooks();
-            return Ok(books);
+            var result = await _bookService.GetAllBooks();
+            return result.IsSuccess ? Ok(result) : NotFound(result.Error);
         }
     }
 }

@@ -13,9 +13,19 @@ const LIST_LI_NAVIGATION = [
     link: 'ManagerBook'
   },
   {
-    name_li: 'Quản lí nội dung sách',
-    icon: '/img/icon_navigation/copywriting.png',
-    link: 'ManagerBook'
+    name_li: 'Chủ đề',
+    icon: '/img/icon_navigation/category.png',
+    link: 'ManagerCategory'
+  },
+  {
+    name_li: 'Tác giả',
+    icon: '/img/icon_navigation/author.png',
+    link: 'ManagerAuthor'
+  },
+  {
+    name_li: 'Nhà xuất bản',
+    icon: '/img/icon_navigation/publisher.png',
+    link: 'ManagerPublisher'
   },
   {
     name_li: 'Người dùng',

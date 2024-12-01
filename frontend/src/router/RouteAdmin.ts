@@ -5,6 +5,9 @@ import ManagerUser from '../views/admin/ManagerUser.vue'
 import ManagerRole from '@/views/admin/ManagerRole.vue'
 import ManagerPermission from '@/views/admin/ManagerPermission.vue'
 import ManagerCoupon from '@/views/admin/ManagerCoupon.vue'
+import ManagerPublisher from '@/views/admin/ManagerPublisher.vue'
+import ManagerAuthor from '@/views/admin/ManagerAuthor.vue'
+import ManagerCategory from '@/views/admin/ManagerCategory.vue'
 // if route admin --- checkAuth = true, check role = admin
 const routerAdmin = [
   {
@@ -42,6 +45,24 @@ const routerAdmin = [
     components: { routeAdmin: ManagerCoupon, routeCustomer: PageNotFound },
     name: 'ManagerCoupon',
     meta: { checkAuth: true, title: 'Quản lí danh sách mã giảm giá' }
+  },
+  {
+    path: '/admin-publisher',
+    components: { routeAdmin: ManagerPublisher, routeCustomer: PageNotFound },
+    name: 'ManagerPublisher',
+    meta: { checkAuth: true, title: 'Quản lí danh sách nhà xuất bản' }
+  },
+  {
+    path: '/admin-author',
+    components: { routeAdmin: ManagerAuthor, routeCustomer: PageNotFound },
+    name: 'ManagerAuthor',
+    meta: { checkAuth: true, title: 'Quản lí danh sách tác giả' }
+  },
+  {
+    path: '/admin-category',
+    components: { routeAdmin: ManagerCategory, routeCustomer: PageNotFound },
+    name: 'ManagerCategory',
+    meta: { checkAuth: true, title: 'Quản lí danh sách chủ đề' }
   }
 ]
 export default routerAdmin

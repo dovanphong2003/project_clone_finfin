@@ -16,7 +16,7 @@ import axiosInstance from '@/services/axiosService'
 const handleTest = () => {
   console.log('test call api')
   axiosInstance
-    .get('/api/Book')
+    .get('/api/Category')
     .then((response) => {
       console.log(response.data)
     })

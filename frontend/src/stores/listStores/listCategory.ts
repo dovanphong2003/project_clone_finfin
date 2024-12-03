@@ -4,53 +4,7 @@ import { defineStore } from 'pinia'
 export const useListCategoryStore = defineStore('listCategory', {
   state: () => {
     return {
-      items: [
-        {
-          category_id: 1,
-          name: 'category 1',
-          parent_id: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          is_active: 1,
-          is_delete: 0
-        },
-        {
-          category_id: 2,
-          name: 'category 2',
-          parent_id: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          is_active: 1,
-          is_delete: 0
-        },
-        {
-          category_id: 3,
-          name: 'category 3',
-          parent_id: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          is_active: 1,
-          is_delete: 0
-        },
-        {
-          category_id: 4,
-          name: 'category 4',
-          parent_id: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          is_active: 1,
-          is_delete: 0
-        },
-        {
-          category_id: 5,
-          name: 'category 5',
-          parent_id: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          is_active: 1,
-          is_delete: 0
-        }
-      ] as ICategory[]
+      items: [] as ICategory[]
     }
   },
   getters: {
@@ -62,13 +16,13 @@ export const useListCategoryStore = defineStore('listCategory', {
       this.items.push(val)
     },
     deleteCategory(category_id: number) {
-      this.items = this.items.filter((item) => item.category_id !== category_id)
+      this.items = this.items.filter((item: ICategory) => item.category_id !== category_id)
     },
-    editCategory(val: ICategory) {
+    editCategory(val: any, id: number) {
       console.log('val: ', val)
-      const index = this.items.findIndex((item) => item.category_id === val.category_id)
+      const index = this.items.findIndex((item: ICategory) => item.category_id === id)
       if (index !== -1) {
-        this.items[index] = val
+        this.items[index] = { ...this.items[index], ...val }
       }
     }
   }

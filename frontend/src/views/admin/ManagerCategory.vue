@@ -2,12 +2,13 @@
 import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
 // cpt modal right
 import ModalEditCategory from '@/modules/ManagerCategory/Modals/ModalEditCategory.vue'
-import { handleLoadingNotication } from '@/common/functions/loading'
+import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
 import { ref, type Ref } from 'vue'
 import type { ICategory } from '@/common/interface'
 import CptModalRight from '@/common/components/CptModalRight.vue'
 import { useListCategoryStore } from '@/stores/listStores/listCategory'
 import CreateCategory from '@/modules/ManagerCategory/CreateCategory.vue'
+import axiosInstance from '@/services/axiosService'
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
   { text: 'ID', value: 'category_id', width: 130 },
@@ -18,6 +19,18 @@ const headers: Header[] = [
   { text: 'Ngày cập nhật', value: 'updatedAt', width: 200 }
 ]
 const store = useListCategoryStore()
+// call api get data all category
+const fncGetAllCategory = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Category')
+    store.items = result.data.data
+    console.log('result: ', result)
+  } catch (error) {
+    console.log('error: ', error)
+    store.items = []
+  }
+}
+fncGetAllCategory()
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -34,8 +47,8 @@ const CategoryData = ref<ICategory>({
   category_id: 0,
   name: '',
   parent_id: 0,
-  is_active: 1,
-  is_delete: 0,
+  is_active: true,
+  is_delete: false,
   createdAt: new Date(),
   updatedAt: new Date()
 })
@@ -46,8 +59,8 @@ const handleClickCloseModalVertical = async () => {
     category_id: 0,
     name: '',
     parent_id: 0,
-    is_active: 1,
-    is_delete: 0,
+    is_active: true,
+    is_delete: false,
     createdAt: new Date(),
     updatedAt: new Date()
   }
@@ -70,11 +83,15 @@ setTimeout(() => {
   loading.value = false
 }, 1000)
 
-const showRow = (val: ClickRowArgument) => {
-  console.log('show: ', val)
+const showRow = async (val: ClickRowArgument) => {
   if (checkDelete.value) {
-    handleLoadingNotication('Xóa thành công', 500, 'bottom-center')
-    store.deleteCategory(val.category_id)
+    const result = await axiosInstance.delete('/api/Category', { params: { id: val.category_id } })
+    if (result.data.isSuccess) {
+      handleLoadingNotication('Xóa thành công', 500, 'top-center')
+      store.deleteCategory(val.category_id)
+    } else {
+      handleLoadingNoticationError('có lỗi xảy ra!', 500, 'top-center')
+    }
     checkDelete.value = false
   } else {
     delete val.indexInCurrentPage
@@ -152,8 +169,11 @@ const showRow = (val: ClickRowArgument) => {
         </template>
         <template #item-is_active="{ is_active }">
           <div class="status">
-            <div :class="[is_active ? 'active' : 'error']" style="padding: 4px 20px">
-              {{ is_active ? 'Active' : 'Disable' }}
+            <div
+              :class="[is_active && is_active !== 'false' ? 'active' : 'error']"
+              style="padding: 4px 20px"
+            >
+              {{ is_active && is_active !== 'false' ? 'Active' : 'Disable' }}
             </div>
           </div>
         </template>

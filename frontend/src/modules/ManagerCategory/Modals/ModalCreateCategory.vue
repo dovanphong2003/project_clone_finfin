@@ -1,33 +1,39 @@
 <script setup lang="ts">
 import type { ICategory } from '@/common/interface'
+import { format } from 'date-fns';
 import { useListCategoryStore } from '@/stores/listStores/listCategory'
-import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
+import {
+  handleLoading,
+  handleLoadingNotication,
+  handleLoadingNoticationError
+} from '@/common/functions/loading'
 import { createdIdAuto } from '@/common/functions/createIdAuto'
+import axiosInstance from '@/services/axiosService'
 const store = useListCategoryStore()
-
-const formatFormData = ({ is_active, name, parent_id }) => {
-  handleLoadingNotication('Tạo thành công', 600, 'top-right')
-
-  // data use update for frontend, if data send to server --> add password.
-  const dataCreateCategory: ICategory = {
+const formatFormData = async ({ is_active, name, parent_id }) => {
+  const dataCreateCategory = {
     category_id: createdIdAuto(),
     name: name,
     parent_id: Number(parent_id) ? parent_id : null,
     is_active: is_active,
-    is_delete: 0,
-    createdAt: new Date(),
-    updatedAt: new Date()
+    is_delete: false
   }
-  console.log('data: ', dataCreateCategory)
-  store.addCategory(dataCreateCategory)
-  return {
-    // return obj use send to server
+  try {
+    await axiosInstance.post('/api/Category', dataCreateCategory)
+    store.addCategory({
+      ...dataCreateCategory,
+      createdAt: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS"),
+      updatedAt: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS"),
+    } as any)
+    handleLoadingNotication('Tạo thành công', 600, 'top-right')
+  } catch (error) {
+    handleLoadingNoticationError('Có lỗi đã xảy ra:' + error, 600, 'top-right')
   }
 }
 </script>
 <template>
   <div class="content_modal">
-    <Vueform :format-data="formatFormData">
+    <Vueform :endpoint="false" :format-data="formatFormData">
       <StaticElement name="divider" tag="hr" />
       <TextElement
         name="name"

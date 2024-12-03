@@ -2,40 +2,66 @@
 import { defineProps } from 'vue'
 import type { ICategory } from '@/common/interface'
 import { useListCategoryStore } from '@/stores/listStores/listCategory'
-import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
-
+import {
+  handleLoading,
+  handleLoadingNotication,
+  handleLoadingNoticationError
+} from '@/common/functions/loading'
+import axiosInstance from '@/services/axiosService'
+import { removeMatchingFields } from '@/common/functions/removeMatchingFields'
 const props = defineProps({
   objCategory: {
     type: Object as () => ICategory,
     required: true
   }
 })
-
 const store = useListCategoryStore()
-
-const formatFormData = ({ is_active, parent_id }) => {
-  handleLoading(600)
-  const dataEdit: ICategory = {
-    category_id: props.objCategory.category_id,
-    name: props.objCategory.name,
-    parent_id: Number(parent_id) ? parent_id : null,
-    is_active: is_active,
-    is_delete: 0,
-    createdAt: props.objCategory.createdAt,
-    updatedAt: new Date()
-  }
-  store.editCategory(dataEdit)
-  return {
-    // return obj use send to server
-  }
-}
 </script>
 <template>
   <div class="modal_content_right">
-    <Vueform endpoint="/form/submit" method="post" :format-data="formatFormData">
+    <Vueform
+      :endpoint="
+        async (FormData, form$) => {
+          handleLoading(600)
+          try {
+            const resultFill = {
+              ...removeMatchingFields(form$.data, props.objCategory),
+              updatedAt: new Date().toLocaleString()
+            }
+            if (resultFill.parent_id == '') {
+              resultFill.parent_id = null
+            } else if (typeof Number(resultFill.paremt_id) !== 'number') {
+              handleLoadingNoticationError('đã xảy ra lỗi!', 500, 'top-center')
+              return
+            }
+            if ('is_active' in resultFill) {
+              if (resultFill.is_active === false) {
+                resultFill.is_active = 'false'
+              } else if (resultFill.is_active === true) {
+                resultFill.is_active = 'true'
+              }
+            }
+            const dataSendServer: any = {
+              id: props.objCategory.category_id,
+              FieldsToUpdate: { ...resultFill, updatedAt: new Date() }
+            }
+            const result = await axiosInstance.patch('/api/Category', dataSendServer)
+            console.log('result: ', result.data)
+            if (result.data.isSuccess) {
+              handleLoadingNotication('cập nhật thành công', 600, 'top-center')
+              store.editCategory(resultFill, props.objCategory.category_id)
+            } else {
+              handleLoadingNoticationError('đã xảy ra lỗi!', 500, 'top-center')
+            }
+          } catch (error) {
+            handleLoadingNoticationError('đã xảy ra lỗi!: ' + error, 500, 'top-center')
+          }
+        }
+      "
+    >
       <StaticElement name="divider" tag="hr" />
       <TextElement
-        name="Category_code"
+        name="category_id"
         :rules="['required']"
         label="mã chủ đề"
         :default="objCategory.category_id"

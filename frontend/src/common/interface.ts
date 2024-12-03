@@ -56,9 +56,9 @@ export interface ICoupon {
 export interface ICategory {
   category_id: number
   name: string
-  parent_id: number | null
+  parent_id: number | null | string
   createdAt: Date
   updatedAt: Date
-  is_active: number
-  is_delete: number
+  is_active: boolean
+  is_delete: boolean
 }

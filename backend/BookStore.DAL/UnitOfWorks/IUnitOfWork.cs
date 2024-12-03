@@ -1,4 +1,5 @@
 ﻿using BookStore.DAL.Repositories;
+using BookStore.DAL.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace BookStore.DAL.UnitOfWorks
     public interface IUnitOfWork : IDisposable
     {
         IBookRepository BookRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
         void Commit();    // Xác nhận transaction
         void Rollback();  // Hủy bỏ transaction
     }

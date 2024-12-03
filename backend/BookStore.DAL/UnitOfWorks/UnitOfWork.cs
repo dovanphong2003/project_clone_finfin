@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using BookStore.DataAccess.DataContext;
+using BookStore.DAL.Repositories.Interfaces;
 
 namespace BookStore.DAL.UnitOfWorks
 {
@@ -17,6 +18,7 @@ namespace BookStore.DAL.UnitOfWorks
         private bool _disposed = false;
 
         public IBookRepository BookRepository { get; }
+        public ICategoryRepository CategoryRepository { get; }
 
         public UnitOfWork(DbContext dbContext)
         {
@@ -25,6 +27,7 @@ namespace BookStore.DAL.UnitOfWorks
             _transaction = _connection.BeginTransaction();
 
             BookRepository = new BookRepository(_connection, _transaction);
+            CategoryRepository = new CategoryRepository(_connection, _transaction);
         }
 
         public void Commit()

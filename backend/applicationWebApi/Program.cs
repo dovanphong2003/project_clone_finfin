@@ -1,5 +1,5 @@
 ﻿
-using BookStore.BLL.Services;
+using BookStore.BLL;
 using Microsoft.AspNetCore.Cors;
 using BookStore.DAL;
 using BookStore.DataAccess;
@@ -28,7 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
 
 // add dependency injection
-builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddBussinessLogicLayer();
 builder.Services.AddDataAccessLayer();
 builder.Services.AddDataAccess();
 

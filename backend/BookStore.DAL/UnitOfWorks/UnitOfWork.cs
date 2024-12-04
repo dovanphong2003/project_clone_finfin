@@ -19,6 +19,8 @@ namespace BookStore.DAL.UnitOfWorks
 
         public IBookRepository BookRepository { get; }
         public ICategoryRepository CategoryRepository { get; }
+        public IAuthorRepository AuthorRepository { get; }
+        public IPublisherRepository PublisherRepository { get; }
 
         public UnitOfWork(DbContext dbContext)
         {
@@ -28,6 +30,8 @@ namespace BookStore.DAL.UnitOfWorks
 
             BookRepository = new BookRepository(_connection, _transaction);
             CategoryRepository = new CategoryRepository(_connection, _transaction);
+            AuthorRepository = new AuthorRepository(_connection, _transaction);
+            PublisherRepository = new PublisherRepository(_connection, _transaction);
         }
 
         public void Commit()

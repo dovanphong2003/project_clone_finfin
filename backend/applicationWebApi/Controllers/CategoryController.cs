@@ -36,7 +36,7 @@ namespace BookStore.API.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> updateCategory([FromBody] UpdateCategoryRequest request)
+        public async Task<IActionResult> updateCategory([FromBody] UpdateRequest request)
         {
             var category = new Category();
             var result = await _categoryService.UpdateCategory(category, request.FieldsToUpdate, request.id);

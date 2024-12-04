@@ -205,14 +205,87 @@ namespace BookStore.DAL.Repositories
                 }
                 else
                 {
-                    category.parent_id = null;  // Gán null nếu cột có giá trị NULL
+                    category.parent_id = null;  
                 }
                 category.is_active = reader.GetBoolean(reader.GetOrdinal("is_active"));
                 category.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));
                category.createdAt = reader.GetDateTime(reader.GetOrdinal("createdAt")).AddHours(7);
-category.updatedAt = reader.GetDateTime(reader.GetOrdinal("updatedAt")).AddHours(7);
+                category.updatedAt = reader.GetDateTime(reader.GetOrdinal("updatedAt")).AddHours(7);
 
             }
+
+            // mapping column for Author
+            if (item is Author author)
+            {
+                author.author_id = reader.GetInt64(reader.GetOrdinal("author_id"));
+                author.name = reader.GetString(reader.GetOrdinal("name"));
+
+                if (!reader.IsDBNull(reader.GetOrdinal("bio")))
+                {
+                    author.bio = reader.GetString(reader.GetOrdinal("bio"));
+                }
+                else
+                {
+                    author.bio = null;
+                }
+
+                author.createdAt = reader.GetDateTime(reader.GetOrdinal("createdAt")).AddHours(7);
+
+                if (!reader.IsDBNull(reader.GetOrdinal("updatedAt")))
+                {
+                    author.updatedAt = reader.GetDateTime(reader.GetOrdinal("updatedAt")).AddHours(7);
+                }
+                else
+                {
+                    author.updatedAt = null;
+                }
+
+                author.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));
+            }
+
+            // mapping for table publisher
+            if (item is Publisher publisher)
+            {
+                publisher.publisher_id = reader.GetInt64(reader.GetOrdinal("publisher_id"));
+                publisher.name = reader.GetString(reader.GetOrdinal("name"));
+
+                if (!reader.IsDBNull(reader.GetOrdinal("address")))
+                {
+                    publisher.address = reader.GetString(reader.GetOrdinal("address"));
+                }
+                else
+                {
+                    publisher.address = null;
+                }
+
+                if (!reader.IsDBNull(reader.GetOrdinal("contact_number")))
+                {
+                    publisher.contact_number = reader.GetString(reader.GetOrdinal("contact_number"));
+                }
+                else
+                {
+                    publisher.contact_number = null;
+                }
+
+                publisher.email = reader.GetString(reader.GetOrdinal("email"));
+
+                if (!reader.IsDBNull(reader.GetOrdinal("website")))
+                {
+                    publisher.website = reader.GetString(reader.GetOrdinal("website"));
+                }
+                else
+                {
+                    publisher.website = null;
+                }
+
+                publisher.createdAt = reader.GetDateTime(reader.GetOrdinal("createdAt")).AddHours(7);
+
+                publisher.updatedAt = reader.GetDateTime(reader.GetOrdinal("updatedAt")).AddHours(7);
+
+                publisher.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));
+            }
+
+
 
             // Các ánh xạ khác nếu cần
             return item;

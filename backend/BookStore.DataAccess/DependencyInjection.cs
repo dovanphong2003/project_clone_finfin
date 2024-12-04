@@ -10,7 +10,6 @@ namespace BookStore.DataAccess
             // Đăng ký DbContext
             services.AddSingleton<DbContext>();
             services.AddSingleton<SqlConnection>();
-            //services.AddSingleton<SqlTransaction>();
             return services;
         }
     }

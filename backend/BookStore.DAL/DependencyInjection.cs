@@ -8,10 +8,6 @@ namespace BookStore.DAL
     {
         public static IServiceCollection AddDataAccessLayer(this IServiceCollection services)
         {
-            // Đăng ký Repositories
-            //services.AddScoped<IBookRepository, BookRepository>();
-
-            // Đăng ký UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;

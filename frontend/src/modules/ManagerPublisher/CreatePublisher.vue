@@ -2,13 +2,17 @@
   <div @click="showModal = true" class="action">
     <button><span>+</span>Thêm mới</button>
   </div>
-  <CptModalCenter title="Tạo thêm mã giảm giá" :show="showModal" :handleShowFalse="handleShowFalse">
-    <ModalCreateCoupon> </ModalCreateCoupon>
+  <CptModalCenter
+    title="Tạo thêm nhà xuất bản"
+    :show="showModal"
+    :handleShowFalse="handleShowFalse"
+  >
+    <ModalCreatePublisher> </ModalCreatePublisher>
   </CptModalCenter>
 </template>
 <script setup lang="ts">
 import CptModalCenter from '@/common/components/CptModalCenter.vue'
-import ModalCreateCoupon from './Modals/ModalCreateCoupon.vue'
+import ModalCreatePublisher from './Modals/ModalCreatePublisher.vue'
 import { ref } from 'vue'
 
 const showModal = ref(false)

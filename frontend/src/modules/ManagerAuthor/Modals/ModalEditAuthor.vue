@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
-import type { ICategory } from '@/common/interface'
-import { useListCategoryStore } from '@/stores/listStores/listCategory'
+import type { IAuthor } from '@/common/interface'
+import { useListAuthorStore } from '@/stores/listStores/listAuthor'
 import {
   handleLoading,
   handleLoadingNotication,
@@ -10,12 +10,12 @@ import {
 import axiosInstance from '@/services/axiosService'
 import { removeMatchingFields } from '@/common/functions/removeMatchingFields'
 const props = defineProps({
-  objCategory: {
-    type: Object as () => ICategory,
+  objAuthor: {
+    type: Object as () => any,
     required: true
   }
 })
-const store = useListCategoryStore()
+const store = useListAuthorStore()
 </script>
 <template>
   <div class="modal_content_right">
@@ -25,31 +25,22 @@ const store = useListCategoryStore()
           handleLoading(600)
           try {
             const resultFill = {
-              ...removeMatchingFields(form$.data, props.objCategory),
+              ...removeMatchingFields(form$.data, props.objAuthor),
               updatedAt: new Date().toLocaleString()
             }
-            if (resultFill.parent_id == '') {
-              resultFill.parent_id = null
-            } else if (typeof Number(resultFill.parent_id) !== 'number') {
-              handleLoadingNoticationError('đã xảy ra lỗi!', 500, 'top-center')
-              return
-            }
-            if ('is_active' in resultFill) {
-              if (resultFill.is_active === false) {
-                resultFill.is_active = 'false'
-              } else if (resultFill.is_active === true) {
-                resultFill.is_active = 'true'
-              }
+            if (resultFill.bio == '') {
+              resultFill.bio = null
             }
             const dataSendServer: any = {
-              id: props.objCategory.category_id,
+              id: props.objAuthor.author_id,
               FieldsToUpdate: { ...resultFill, updatedAt: new Date() }
             }
-            const result = await axiosInstance.patch('/api/Category', dataSendServer)
+
+            const result = await axiosInstance.patch('/api/Author', dataSendServer)
             console.log('result: ', result.data)
             if (result.data.isSuccess) {
               handleLoadingNotication('cập nhật thành công', 600, 'top-center')
-              store.editCategory(resultFill, props.objCategory.category_id)
+              store.editAuthor(resultFill, props.objAuthor.author_id)
             } else {
               handleLoadingNoticationError('đã xảy ra lỗi!', 500, 'top-center')
             }
@@ -61,25 +52,12 @@ const store = useListCategoryStore()
     >
       <StaticElement name="divider" tag="hr" />
       <TextElement
-        name="category_id"
+        name="author_id"
         :rules="['required']"
-        label="mã chủ đề"
-        :default="objCategory.category_id"
+        label="mã tác giả"
+        :default="objAuthor.author_id"
         :submit="false"
         disabled
-      />
-      <ToggleElement
-        name="is_active"
-        :columns="{
-          container: 6
-        }"
-        align="left"
-        label="Trạng Thái"
-        :labels="{
-          on: 'ON',
-          off: 'OFF'
-        }"
-        :default="objCategory.is_active ? true : false"
       />
       <TextElement
         name="name"
@@ -89,17 +67,17 @@ const store = useListCategoryStore()
         }"
         :rules="['required']"
         :messages="{
-          required: 'Không được bỏ trống tên chủ đề'
+          required: 'Không được bỏ trống tên tác giả'
         }"
-        :default="objCategory.name"
+        :default="objAuthor.name"
       />
       <TextElement
-        name="parent_id"
-        label="Parent_id"
+        name="bio"
+        label="Giới thiệu"
         :columns="{
           container: 12
         }"
-        :default="objCategory.parent_id ? objCategory.parent_id : ''"
+        :default="objAuthor.bio ? objAuthor.bio : ''"
       />
       <ButtonElement
         name="submit"

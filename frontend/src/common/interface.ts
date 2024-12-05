@@ -60,5 +60,26 @@ export interface ICategory {
   createdAt: Date
   updatedAt: Date
   is_active: boolean
-  is_delete: boolean
+  isDeleted: boolean
+}
+
+export interface IAuthor {
+  author_id: number
+  name: string
+  bio: string | null
+  createdAt: Date
+  updatedAt: Date | null
+  isDeleted: boolean
+}
+
+export interface IPublisher {
+  publisher_id: number
+  name: string
+  address: string | null
+  contact_number: string | null
+  email: string
+  website: string | null
+  createdAt: Date
+  updatedAt: Date
+  isDeleted: boolean
 }

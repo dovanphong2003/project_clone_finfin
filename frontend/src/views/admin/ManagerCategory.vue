@@ -48,7 +48,7 @@ const CategoryData = ref<ICategory>({
   name: '',
   parent_id: 0,
   is_active: true,
-  is_delete: false,
+  isDeleted: false,
   createdAt: new Date(),
   updatedAt: new Date()
 })
@@ -60,7 +60,7 @@ const handleClickCloseModalVertical = async () => {
     name: '',
     parent_id: 0,
     is_active: true,
-    is_delete: false,
+    isDeleted: false,
     createdAt: new Date(),
     updatedAt: new Date()
   }
@@ -176,16 +176,6 @@ const showRow = async (val: ClickRowArgument) => {
               {{ is_active && is_active !== 'false' ? 'Active' : 'Disable' }}
             </div>
           </div>
-        </template>
-        <template #item-access="{ access }">
-          <div class="access">
-            <div :class="[access == 'public' ? 'public' : 'private']" style="padding: 4px 20px">
-              {{ access == 'public' ? 'Public' : 'Private' }}
-            </div>
-          </div>
-        </template>
-        <template #item-discount="{ discount }">
-          <p style="font-weight: 600">{{ discount }}%</p>
         </template>
         <!--template for handle ( edit, delete )-->
         <template #item-handle>

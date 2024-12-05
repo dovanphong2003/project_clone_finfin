@@ -1,25 +1,35 @@
 <script lang="ts" setup>
 import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
 // cpt modal right
-import ModalEditCoupon from '@/modules/ManagerCoupon/Modals/ModalEditCoupon.vue'
-import { handleLoadingNotication } from '@/common/functions/loading'
+import ModalEditAuthor from '@/modules/ManagerAuthor/Modals/ModalEditAuthor.vue'
+import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
 import { ref, type Ref } from 'vue'
-import type { ICoupon } from '@/common/interface'
+import type { IAuthor } from '@/common/interface'
 import CptModalRight from '@/common/components/CptModalRight.vue'
-import { useListCouponStore } from '@/stores/listStores/listCoupon'
-import CreateCoupon from '@/modules/ManagerCoupon/CreateCoupon.vue'
+import { useListAuthorStore } from '@/stores/listStores/listAuthor'
+import CreateAuthor from '@/modules/ManagerAuthor/CreateAuthor.vue'
+import axiosInstance from '@/services/axiosService'
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
-  { text: 'Mã giảm giá', value: 'coupon_code', sortable: true, width: 130 },
-  { text: 'Giảm giá', value: 'discount', width: 100 },
-  { text: 'Số lượng', value: 'quantity', width: 100 },
-  { text: 'Trạng thái', value: 'status', width: 100 },
-  { text: 'Truy cập', value: 'access', width: 100 },
+  { text: 'ID', value: 'author_id', width: 130 },
+  { text: 'Tên', value: 'name', sortable: true, width: 130 },
+  { text: 'Giới thiệu', value: 'bio', width: 250 },
   { text: 'Ngày tạo', value: 'createdAt', width: 200 },
-  { text: 'Ngày hết hạn', value: 'expiry_date', width: 200 },
-  { text: 'Cập nhật mới', value: 'updatedAt', width: 200 }
+  { text: 'Ngày cập nhật', value: 'updatedAt', width: 200 }
 ]
-const store = useListCouponStore()
+const store = useListAuthorStore()
+// call api get data all Author
+const fncGetAllAuthor = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Author')
+    store.items = result.data.data
+    console.log('result: ', result)
+  } catch (error) {
+    console.log('error: ', error)
+    store.items = []
+  }
+}
+fncGetAllAuthor()
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -32,35 +42,29 @@ const checkDelete: Ref<boolean> = ref(false)
 const checkEdit: Ref<boolean> = ref(false)
 
 // onclick
-const CouponData = ref<ICoupon>({
-  coupon_id: '',
-  coupon_code: '',
-  discount: 0,
-  quantity: 0,
-  status: 'active',
-  access: 'private',
-  expiry_date: new Date('2024-01-01'),
-  createdAt: new Date('2023-09-01'),
-  updatedAt: new Date('2023-09-01')
+const AuthorData = ref<IAuthor>({
+  author_id: 0,
+  name: '',
+  bio: '',
+  isDeleted: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
 })
 const handleClickCloseModalVertical = async () => {
   activeModalVertical.value = false
   disableModalVertical.value = true
-  CouponData.value = {
-    coupon_id: '',
-    coupon_code: '',
-    discount: 0,
-    quantity: 0,
-    status: 'active',
-    access: 'private',
-    expiry_date: new Date('2024-01-01'),
-    createdAt: new Date('2023-09-01'),
-    updatedAt: new Date('2023-09-01')
+  AuthorData.value = {
+    author_id: 0,
+    name: '',
+    bio: '',
+    isDeleted: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 }
 
-// handle deleteCoupon
-const handleDeleteCoupon = () => {
+// handle deleteAuthor
+const handleDeleteAuthor = () => {
   checkDelete.value = true
 }
 
@@ -76,15 +80,19 @@ setTimeout(() => {
   loading.value = false
 }, 1000)
 
-const showRow = (val: ClickRowArgument) => {
-  console.log('show: ', val)
+const showRow = async (val: ClickRowArgument) => {
   if (checkDelete.value) {
-    handleLoadingNotication('Xóa thành công', 500, 'bottom-center')
-    store.deleteCoupon(val.coupon_code)
+    const result = await axiosInstance.delete('/api/Author', { params: { id: val.author_id } })
+    if (result.data.isSuccess) {
+      handleLoadingNotication('Xóa thành công', 500, 'top-center')
+      store.deleteAuthor(val.author_id)
+    } else {
+      handleLoadingNoticationError('có lỗi xảy ra!', 500, 'top-center')
+    }
     checkDelete.value = false
   } else {
     delete val.indexInCurrentPage
-    CouponData.value = val as any
+    AuthorData.value = val as any
   }
 }
 </script>
@@ -107,7 +115,7 @@ const showRow = (val: ClickRowArgument) => {
             <input placeholder="nhập từ tìm kiếm" type="text" v-model="searchValue" />
           </div>
         </div>
-        <CreateCoupon />
+        <CreateAuthor />
       </div>
       <EasyDataTable
         table-class-name="customize-table"
@@ -122,9 +130,7 @@ const showRow = (val: ClickRowArgument) => {
         :loading="loading"
         :rows-per-page="10"
         :rows-items="[10, 15, 20, 25]"
-        show-index-symbol="TT"
         rows-per-page-message="Số hàng"
-        show-index
         @click-row="showRow"
         sort-by="sortBy"
         sort-type="sortType"
@@ -142,7 +148,7 @@ const showRow = (val: ClickRowArgument) => {
         </template>
 
         <!--template for name, example name User,...-->
-        <template #item-coupon_code="{ coupon_code }">
+        <template #item-name="{ name }">
           <p
             style="
               display: -webkit-box;
@@ -152,30 +158,27 @@ const showRow = (val: ClickRowArgument) => {
               text-overflow: ellipsis;
               font-weight: 500;
               text-align: center;
+              font-weight: bold;
             "
           >
-            {{ coupon_code }}
+            {{ name }}
           </p>
         </template>
-        <template #item-status="{ status }">
-          <div class="status">
-            <div
-              :class="[status == 'active' ? 'active' : status == 'expired' ? 'expired' : 'error']"
-              style="padding: 4px 20px"
-            >
-              {{ status == 'active' ? 'Active' : status == 'expired' ? 'expired' : 'disable' }}
-            </div>
-          </div>
-        </template>
-        <template #item-access="{ access }">
-          <div class="access">
-            <div :class="[access == 'public' ? 'public' : 'private']" style="padding: 4px 20px">
-              {{ access == 'public' ? 'Public' : 'Private' }}
-            </div>
-          </div>
-        </template>
-        <template #item-discount="{ discount }">
-          <p style="font-weight: 600">{{ discount }}%</p>
+        <template #item-bio="{ bio }">
+          <p
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-weight: 500;
+              text-align: center;
+              font-weight: bold;
+            "
+          >
+            {{ bio }}
+          </p>
         </template>
         <!--template for handle ( edit, delete )-->
         <template #item-handle>
@@ -187,7 +190,7 @@ const showRow = (val: ClickRowArgument) => {
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
             />
             <img
-              @click="handleDeleteCoupon"
+              @click="handleDeleteAuthor"
               src="/icon/delete.png"
               alt="delete"
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
@@ -201,11 +204,11 @@ const showRow = (val: ClickRowArgument) => {
         :disable-modal="disableModalVertical"
         @handle-click-close-modal="handleClickCloseModalVertical"
       >
-        <ModalEditCoupon
-          v-if="activeModalVertical && CouponData.coupon_code"
-          :is="ModalEditCoupon"
-          :objCoupon="CouponData"
-        ></ModalEditCoupon>
+        <ModalEditAuthor
+          v-if="activeModalVertical && AuthorData.author_id"
+          :is="ModalEditAuthor"
+          :objAuthor="AuthorData"
+        ></ModalEditAuthor>
       </CptModalRight>
     </div>
   </div>
@@ -261,12 +264,6 @@ const showRow = (val: ClickRowArgument) => {
         border-radius: 4px;
         background-color: rgba(10, 207, 151, 0.18);
         border: 1px solid #00bc87;
-      }
-      .expired {
-        color: #ffffff;
-        border-radius: 4px;
-        background-color: rgb(255, 17, 0);
-        border: 1px solid red;
       }
     }
     .access {

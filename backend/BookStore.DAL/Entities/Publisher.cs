@@ -15,8 +15,8 @@ namespace BookStore.DAL.Entities
         public string? contact_number { get; set; }
         public string email { get; set; }
         public string? website { get; set; }
-        public DateTime? createdAt { get; set; }
-        public DateTime? updatedAt { get; set; }
+        public DateTime createdAt { get; set; }
+        public DateTime updatedAt { get; set; }
         public bool isDeleted { get; set; }
     }
 }

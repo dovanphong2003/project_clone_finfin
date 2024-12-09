@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BookStore.BLL.Services.Interfaces;
+using BookStore.DAL.Entities;
 using BookStore.DAL.UnitOfWorks;
 using BookStore.DTO.DTOs;
 using BookStore.Shared.Response;
@@ -17,11 +19,60 @@ namespace BookStore.BLL.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result<IEnumerable<BookDTO>>> GetAllBooks()
+        public async Task<Result<IEnumerable<Book>>> GetAllBooks()
         {
-            var books = await _unitOfWork.BookRepository.GetAllAsync();
-            var bookDTOs = books.Select(b => new BookDTO { id = b.id, title = b.title });
-            return Result.Success(bookDTOs);
+
+            var Books = await _unitOfWork.BookRepository.GetAllAsync();
+            return Result.Success(Books);
+
+
+
+        }
+
+        public async Task<Result> CreateBook(Book book)
+        {
+            try
+            {
+                await _unitOfWork.BookRepository.AddAsync(book);
+
+                // only commit, data add to database.
+                _unitOfWork.Commit();
+                return Result.Success();
+
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(ex.Message);
+            }
+        }
+
+        public async Task<Result> UpdateBook(Book book, Dictionary<string, string> FieldsToUpdate, long id)
+        {
+            try
+            {
+                await _unitOfWork.BookRepository.UpdateAsync(book, FieldsToUpdate, id);
+
+                _unitOfWork.Commit();
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(ex.Message);
+            }
+        }
+
+        public async Task<Result> DeleteBook(long id)
+        {
+            try
+            {
+                await _unitOfWork.BookRepository.DeleteAsync(id);
+                _unitOfWork.Commit();
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                return (Result.Failure(ex.Message));
+            }
         }
     }
 

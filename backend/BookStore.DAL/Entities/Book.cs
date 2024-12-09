@@ -8,9 +8,22 @@ namespace BookStore.DAL.Entities
 {
     public class Book
     {
-        public long id { get; set; }          // Mã định danh của sách
-        public string title { get; set; }   // Tên sách
-        public string author { get; set; }  // Tác giả
-        public string type { get; set; }  // thể loại của sách
+        public long book_id { get; set; }          
+        public string title { get; set; }   
+        public long author_id { get; set; } 
+        public long pulisher_id { get; set; }
+        public long category_id { get; set; }
+        public string imageUrl { get; set; }
+        public int stock_quantity { get; set; }
+        public string? content_data { get; set; }  
+        public bool status { get; set; }
+        public long? coupon_id { get; set; }
+        public DateTime ReceiveDate { get; set; }
+        public DateTime? updatedAt { get; set; }
+        public bool isDeleted { get; set; } = false;
+        public long createdBy { get; set; }
+        public long? updatedBy { get; set; }
+        public long? deleteBy { get; set; }
+
     }
 }

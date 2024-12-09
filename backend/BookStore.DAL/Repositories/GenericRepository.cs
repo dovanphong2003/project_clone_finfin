@@ -188,14 +188,30 @@ namespace BookStore.DAL.Repositories
         {
             var item = Activator.CreateInstance<T>();
 
+            // mapping column for Book
             if (item is Book book)
             {
-                book.id = reader.GetInt64(reader.GetOrdinal("id"));
+                book.book_id = reader.GetInt64(reader.GetOrdinal("book_id"));
                 book.title = reader.GetString(reader.GetOrdinal("title"));
+                book.author_id = reader.GetInt64(reader.GetOrdinal("author_id"));
+                book.pulisher_id = reader.GetInt64(reader.GetOrdinal("pulisher_id"));
+                book.category_id = reader.GetInt64(reader.GetOrdinal("category_id"));
+                book.imageUrl = reader.IsDBNull(reader.GetOrdinal("imageUrl")) ? null : reader.GetString(reader.GetOrdinal("imageUrl"));
+                book.stock_quantity = reader.GetInt32(reader.GetOrdinal("stock_quantity"));
+                book.content_data = reader.IsDBNull(reader.GetOrdinal("content_data")) ? null : reader.GetString(reader.GetOrdinal("content_data"));
+                book.status = reader.GetBoolean(reader.GetOrdinal("status"));
+                book.coupon_id = reader.IsDBNull(reader.GetOrdinal("coupon_id")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("coupon_id"));
+                book.ReceiveDate = reader.GetDateTime(reader.GetOrdinal("ReceiveDate"));
+                book.updatedAt = reader.IsDBNull(reader.GetOrdinal("updatedAt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("updatedAt"));
+                book.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));
+                book.createdBy = reader.GetInt64(reader.GetOrdinal("createdBy"));
+                book.updatedBy = reader.IsDBNull(reader.GetOrdinal("updatedBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("updatedBy"));
+                book.deleteBy = reader.IsDBNull(reader.GetOrdinal("deleteBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("deleteBy"));
             }
 
+
             // mapping column for Category
-            if(item is Category category)
+            if (item is Category category)
             {
                 category.category_id = reader.GetInt64(reader.GetOrdinal("category_id"));
                 category.name = reader.GetString(reader.GetOrdinal("name"));

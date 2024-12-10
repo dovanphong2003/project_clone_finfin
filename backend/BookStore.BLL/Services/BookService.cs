@@ -29,6 +29,12 @@ namespace BookStore.BLL.Services
 
         }
 
+        public async Task<Result<IEnumerable<BookExtendedDTO>>> GetAllBooksExtended()
+        {
+            var BooksExtended = await _unitOfWork.BookRepository.GetAllExtendedAsync();
+            return Result.Success(BooksExtended);
+        }
+
         public async Task<Result> CreateBook(Book book)
         {
             try

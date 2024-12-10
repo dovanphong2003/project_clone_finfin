@@ -1,0 +1,8 @@
+.vs/
+# Bỏ qua thư mục bin và obj
+bin/
+obj/
+*.dll
+*.pdb
+*.json
+VariableGlobal.cs

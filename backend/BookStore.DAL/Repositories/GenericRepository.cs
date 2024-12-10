@@ -45,14 +45,9 @@ namespace BookStore.DAL.Repositories
                     }
                 }
             }
-            catch (SqlException ex)
-            {
-                Console.WriteLine($"Lỗi SQL: {ex.Message}");
-                // Xử lý lỗi, bạn có thể thêm logging hoặc ném lại lỗi tùy ý
-            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi: {ex.Message}");
+                throw new Exception("Lỗi từ Repository: " + ex.Message, ex);
             }
 
             return items;

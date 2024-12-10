@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookStore.DAL\BookStore.DAL.csproj" />
+    <ProjectReference Include="..\BookStore.DTO\BookStore.DTO.csproj" />
     <ProjectReference Include="..\BookStore.Models\BookStore.DTO.csproj" />
     <ProjectReference Include="..\Shared\BookStore.Shared.csproj" />
   </ItemGroup>

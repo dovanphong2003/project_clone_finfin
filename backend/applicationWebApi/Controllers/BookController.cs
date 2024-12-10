@@ -16,10 +16,19 @@ namespace BookStore.API.Controllers
             _BookService = BookService;
         }
 
+        // only get id of author, category, publisher
         [HttpGet]
         public async Task<IActionResult> GetAllBooks()
         {
             var result = await _BookService.GetAllBooks();
+            return result.IsSuccess ? Ok(result) : NotFound(result.Error);
+        }
+
+        // get extended name of author, category, publisher
+        [HttpGet("extended")]
+        public async Task<IActionResult> GetAllBooksExtended()
+        {
+            var result = await _BookService.GetAllBooksExtended();
             return result.IsSuccess ? Ok(result) : NotFound(result.Error);
         }
 

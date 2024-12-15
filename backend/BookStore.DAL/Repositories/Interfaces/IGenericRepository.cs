@@ -12,7 +12,7 @@ namespace BookStore.DAL.Repositories.Interfaces
         Task<T> GetByIdAsync(long id);
         Task AddAsync(T entity);
 
-        Task UpdateAsync(T entity , Dictionary<string, string> FieldsToUpdate, long id);
+        Task UpdateAsync(T entity , Dictionary<string, object> FieldsToUpdate, long id);
         Task DeleteAsync(long id);
     }
 }

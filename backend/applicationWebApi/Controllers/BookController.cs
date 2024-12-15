@@ -32,15 +32,23 @@ namespace BookStore.API.Controllers
             return result.IsSuccess ? Ok(result) : NotFound(result.Error);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateBook([FromBody] Book Book)
+        // get select-options ( author, category, publisher )
+        [HttpGet("select-options")]
+        public async Task<IActionResult> GetAllSelectOptionsOfBook()
         {
-            var result = await _BookService.CreateBook(Book);
+            var result = await _BookService.GetAllSelectOptionsOfBook();
+            return result.IsSuccess ? Ok(result) : NotFound(result.Error);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBook([FromBody] BookCreateDTO bookDTO)
+        {
+            var result = await _BookService.CreateBook(bookDTO);
             return result.IsSuccess
              ? Ok(result)
              : BadRequest(result.Error);
         }
-
+            
         [HttpPatch]
         public async Task<IActionResult> updateBook([FromBody] UpdateRequest request)
         {

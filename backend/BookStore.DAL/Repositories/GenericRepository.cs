@@ -116,13 +116,18 @@ namespace BookStore.DAL.Repositories
         }
 
 
-        public async Task UpdateAsync(T entity, Dictionary<string, string> FieldsToUpdate, long id)
+        public async Task UpdateAsync(T entity, Dictionary<string, object> FieldsToUpdate, long id)
         {
             var tableName = typeof(T).Name.ToLower(); 
-            var nameColumnId = typeof(T).GetProperties()[0].Name; 
+            var nameColumnId = typeof(T).GetProperties()[0].Name;
 
+            // Lấy danh sách khóa
             List<string> keys = FieldsToUpdate.Keys.ToList();
-            List<string> values = FieldsToUpdate.Values.ToList();
+
+            // Lấy danh sách giá trị và chuyển chúng thành chuỗi
+            List<string> values = FieldsToUpdate.Values
+                                                 .Select(v => v?.ToString() ?? string.Empty)  // Chuyển giá trị thành string
+                                                 .ToList();
 
             var setClause = string.Join(", ", keys.Select(p => $"{p} = @{p}"));
 
@@ -135,13 +140,41 @@ namespace BookStore.DAL.Repositories
                     foreach (var key in keys)
                     {
                         var value = FieldsToUpdate[key];
+
                         if (value == null)
                         {
+                            // Xử lý giá trị null
                             command.Parameters.AddWithValue($"@{key}", DBNull.Value);
+                        }
+                        else if (value is string)
+                        {
+                            // Nếu là string, thêm giá trị như một chuỗi
+                            command.Parameters.AddWithValue($"@{key}", (string)value);
+                        }
+                        else if (value is long)
+                        {
+                            // Nếu là int, thêm giá trị như một số nguyên
+                            command.Parameters.AddWithValue($"@{key}", (long)value);
+                        }
+                        else if (value is decimal)
+                        {
+                            // Nếu là decimal, thêm giá trị như một số thập phân
+                            command.Parameters.AddWithValue($"@{key}", (decimal)value);
+                        }
+                        else if (value is double)
+                        {
+                            // Nếu là double, thêm giá trị như một số thực
+                            command.Parameters.AddWithValue($"@{key}", (double)value);
+                        }
+                        else if (value is DateTime)
+                        {
+                            // Nếu là DateTime, thêm giá trị như một ngày giờ
+                            command.Parameters.AddWithValue($"@{key}", (DateTime)value);
                         }
                         else
                         {
-                            command.Parameters.AddWithValue($"@{key}", value);
+                            // Nếu giá trị là kiểu dữ liệu khác, chuyển nó thành string
+                            command.Parameters.AddWithValue($"@{key}", value.ToString());
                         }
                     }
 
@@ -188,14 +221,14 @@ namespace BookStore.DAL.Repositories
             {
                 book.book_id = reader.GetInt64(reader.GetOrdinal("book_id"));
                 book.title = reader.GetString(reader.GetOrdinal("title"));
+                book.price = reader.GetInt64(reader.GetOrdinal("price"));
                 book.author_id = reader.GetInt64(reader.GetOrdinal("author_id"));
-                book.pulisher_id = reader.GetInt64(reader.GetOrdinal("pulisher_id"));
+                book.publisher_id = reader.GetInt64(reader.GetOrdinal("publisher_id"));
                 book.category_id = reader.GetInt64(reader.GetOrdinal("category_id"));
                 book.imageUrl = reader.IsDBNull(reader.GetOrdinal("imageUrl")) ? null : reader.GetString(reader.GetOrdinal("imageUrl"));
                 book.stock_quantity = reader.GetInt32(reader.GetOrdinal("stock_quantity"));
                 book.content_data = reader.IsDBNull(reader.GetOrdinal("content_data")) ? null : reader.GetString(reader.GetOrdinal("content_data"));
                 book.status = reader.GetBoolean(reader.GetOrdinal("status"));
-                book.coupon_id = reader.IsDBNull(reader.GetOrdinal("coupon_id")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("coupon_id"));
                 book.ReceiveDate = reader.GetDateTime(reader.GetOrdinal("ReceiveDate"));
                 book.updatedAt = reader.IsDBNull(reader.GetOrdinal("updatedAt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("updatedAt"));
                 book.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));

@@ -13,7 +13,7 @@ namespace BookStore.BLL.Services
     {
         Task<Result<IEnumerable<Category>>> GetAllCategories();
         Task<Result> CreateCategory(Category category);
-        Task<Result> UpdateCategory(Category category, Dictionary<string, string> FieldsToUpdate, long id);
+        Task<Result> UpdateCategory(Category category, Dictionary<string, object> FieldsToUpdate, long id);
         Task<Result> DeleteCategory(long id);
 
     }

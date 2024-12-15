@@ -22,7 +22,12 @@ builder.Services.AddCors(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(o => o.SwaggerDoc("V1", new Microsoft.OpenApi.Models.OpenApiInfo
+{
+    Title = "API WEB BOOK STORE",
+    Version = "V1",
+    Description = "API"
+}));
 
 // Add Authorization (optional)
 builder.Services.AddAuthorization();
@@ -40,7 +45,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(o => o.SwaggerEndpoint("/swagger/V1/swagger.json","My API V1"));
 }
 
 // Use CORS policy

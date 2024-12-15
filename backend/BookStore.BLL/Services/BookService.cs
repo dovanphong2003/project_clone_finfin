@@ -35,14 +35,38 @@ namespace BookStore.BLL.Services
             return Result.Success(BooksExtended);
         }
 
-        public async Task<Result> CreateBook(Book book)
+        public async Task<Result<IEnumerable<SelectOptionsOfBookDTO>>> GetAllSelectOptionsOfBook()
+        {
+            var OptionsBook = await _unitOfWork.BookRepository.GetAllOptionsOfBookAsync();
+            return Result.Success(OptionsBook);
+        }
+
+        public async Task<Result> CreateBook(BookCreateDTO bookDTO)
         {
             try
             {
-                await _unitOfWork.BookRepository.AddAsync(book);
 
-                // only commit, data add to database.
-                _unitOfWork.Commit();
+                var book = new Book
+                {
+                    book_id = bookDTO.book_id,
+                    title = bookDTO.title,
+                    price = bookDTO.price,
+                    author_id = bookDTO.author_id,
+                    publisher_id = bookDTO.publisher_id,
+                    category_id = bookDTO.category_id,
+                    stock_quantity = bookDTO.stock_quantity,
+                    status = bookDTO.status,
+                    createdBy = bookDTO.createdBy,
+                    ReceiveDate = bookDTO.ReceiveDate,
+                    // Cập nhật URL ảnh đã upload
+                    imageUrl = bookDTO.imageUrl,  
+                    content_data = null, 
+                    isDeleted = false
+                };
+
+                // Lưu đối tượng book vào cơ sở dữ liệu
+                await _unitOfWork.BookRepository.AddAsync(book);
+               _unitOfWork.Commit();
                 return Result.Success();
 
             }
@@ -52,7 +76,7 @@ namespace BookStore.BLL.Services
             }
         }
 
-        public async Task<Result> UpdateBook(Book book, Dictionary<string, string> FieldsToUpdate, long id)
+        public async Task<Result> UpdateBook(Book book, Dictionary<string, object> FieldsToUpdate, long id)
         {
             try
             {

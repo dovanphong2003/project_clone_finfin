@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using BookStore.DataAccess.DataContext;
 using BookStore.DAL.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace BookStore.DAL.UnitOfWorks
 {
@@ -15,6 +16,7 @@ namespace BookStore.DAL.UnitOfWorks
     {
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
+        private readonly IConfiguration _configuration;
         private bool _disposed = false;
 
         public IBookRepository BookRepository { get; }
@@ -22,13 +24,13 @@ namespace BookStore.DAL.UnitOfWorks
         public IAuthorRepository AuthorRepository { get; }
         public IPublisherRepository PublisherRepository { get; }
 
-        public UnitOfWork(DbContext dbContext)
+        public UnitOfWork(DbContext dbContext, IConfiguration configuration)
         {
             _connection = dbContext.GetConnection();
             _connection.Open();
             _transaction = _connection.BeginTransaction();
 
-            BookRepository = new BookRepository(_connection, _transaction);
+            BookRepository = new BookRepository(_connection, _transaction, configuration);
             CategoryRepository = new CategoryRepository(_connection, _transaction);
             AuthorRepository = new AuthorRepository(_connection, _transaction);
             PublisherRepository = new PublisherRepository(_connection, _transaction);

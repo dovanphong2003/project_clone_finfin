@@ -46,7 +46,7 @@ namespace BookStore.BLL.Services
             }
         }
 
-        public async Task<Result> UpdatePublisher(Publisher publisher, Dictionary<string, string> FieldsToUpdate, long id)
+        public async Task<Result> UpdatePublisher(Publisher publisher, Dictionary<string, object> FieldsToUpdate, long id)
         {
             try
             {

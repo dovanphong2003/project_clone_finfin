@@ -42,7 +42,7 @@ namespace BookStore.BLL.Services
             }
         }
 
-        public async Task<Result> UpdateCategory(Category category, Dictionary<string, string> FieldsToUpdate, long id)
+        public async Task<Result> UpdateCategory(Category category, Dictionary<string, object> FieldsToUpdate, long id)
         {
             try
             {

@@ -13,8 +13,9 @@ namespace BookStore.BLL.Services
         Task<Result<IEnumerable<Book>>> GetAllBooks();
 
         Task<Result<IEnumerable<BookExtendedDTO>>> GetAllBooksExtended();
-        Task<Result> CreateBook(Book book);
-        Task<Result> UpdateBook(Book book, Dictionary<string, string> FieldsToUpdate, long id);
+        Task<Result<IEnumerable<SelectOptionsOfBookDTO>>> GetAllSelectOptionsOfBook();
+        Task<Result> CreateBook(BookCreateDTO bookDTO);
+        Task<Result> UpdateBook(Book book, Dictionary<string, object> FieldsToUpdate, long id);
         Task<Result> DeleteBook(long id);
     }
 }

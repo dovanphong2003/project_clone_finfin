@@ -11,6 +11,7 @@ namespace BookStore.DAL.Repositories
     public interface IBookRepository : IGenericRepository<Book>
     {
         Task<IEnumerable<BookExtendedDTO>> GetAllExtendedAsync();
+        Task<IEnumerable<SelectOptionsOfBookDTO>> GetAllOptionsOfBookAsync();
     }
 
 }

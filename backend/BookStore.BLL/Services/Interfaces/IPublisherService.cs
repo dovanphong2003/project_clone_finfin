@@ -12,7 +12,7 @@ namespace BookStore.BLL.Services.Interfaces
     {
         Task<Result<IEnumerable<Publisher>>> GetAllPublishers();
         Task<Result> CreatePublisher(Publisher publisher);
-        Task<Result> UpdatePublisher(Publisher publisher, Dictionary<string, string> FieldsToUpdate, long id);
+        Task<Result> UpdatePublisher(Publisher publisher, Dictionary<string, object> FieldsToUpdate, long id);
         Task<Result> DeletePublisher(long id);
     }
 }

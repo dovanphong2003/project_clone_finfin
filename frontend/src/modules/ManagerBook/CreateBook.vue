@@ -3,14 +3,21 @@
     <button><span>+</span>Thêm mới</button>
   </div>
   <CptModalCenter title="Tạo thêm sách" :show="showModal" :handleShowFalse="handleShowFalse">
-    <ModalCreateBook> </ModalCreateBook>
+    <ModalCreateBook :selectOptions="props.selectOptions"> </ModalCreateBook>
   </CptModalCenter>
 </template>
 <script setup lang="ts">
 import CptModalCenter from '@/common/components/CptModalCenter.vue'
+import { ISelectOptionsOfBook } from '@/common/interface';
 import ModalCreateBook from '@/modules/ManagerBook/Modals/ModalCreateBook.vue'
 import axiosInstance from '@/services/axiosService'
 import { ref } from 'vue';
+const props = defineProps({
+  selectOptions: {
+    type: Object as () => ISelectOptionsOfBook | any,
+    required:true
+  }
+})
 
 const showModal = ref(false)
 

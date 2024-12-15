@@ -1,15 +1,34 @@
 <script setup lang="ts">
 import { ref, defineProps, onMounted } from 'vue'
-import type { IBook } from '@/common/interface'
+import type { IBookExtended, ISelectOptionsOfBook } from '@/common/interface'
 import 'vue3-toastify/dist/index.css'
 import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
 import { useListBookStore } from '@/stores/listStores/listBook'
+import axiosInstance from '@/services/axiosService'
+import Swal from 'sweetalert2'
+import { removeMatchingFields } from '@/common/functions/removeMatchingFields'
 const props = defineProps({
   objBook: {
-    type: Object as () => IBook,
+    type: Object as () => IBookExtended,
     required: true
+  },
+  selectOptions: {
+    type: Object as () => ISelectOptionsOfBook | any,
+    required:true
   }
 })
+console.log("objL ",props.objBook)
+const handleSuccessAndReload = async () => {
+  // Hiển thị thông báo với SweetAlert2
+  await Swal.fire({
+    title: 'Sửa thành công!',
+    icon: 'success',
+    confirmButtonText: 'OK'
+  });
+
+  // Reload trang sau khi người dùng bấm OK
+  window.location.reload();
+};
 // schema of form data
 const schema = ref({})
 
@@ -25,8 +44,7 @@ interface ImageFile {
 // use upload image
 const preview = ref('')
 const image = ref<Partial<ImageFile>>({}) // Partial để có thể khởi tạo rỗng
-
-const store = useListBookStore()
+const notiImageEmpty = ref(false)
 const previewImage = (event) => {
   var input = event.target
   if (input.files) {
@@ -44,43 +62,91 @@ const previewImage = (event) => {
 }
 
 // submit form
-const submitForm = () => {
-  if (form$.value) {
-    // use send to server
+const submitFormEdit = async () => {
+  const dataMatch = {...props.objBook,category:props.objBook.category.category_id, author: props.objBook.author.author_id, publisher: props.objBook.publisher.publisher_id}
+  try {
+    // Nếu validation
+    if (!image.value.name && !image.value) notiImageEmpty.value = true; // Kiểm tra nếu không có ảnh và không có ảnh mới
     const dataForm = {
       ...(form$.value as any).data,
-      infoImage: image.value,
-      base64Image: preview.value
-    }
+      updatedBy: 123456788,  // Có thể là ID của người chỉnh sửa
+      updatedAt: new Date(), // Thời gian cập nhật
+      price: Number((form$.value as any).data.price),
+      stock_quantity: Number((form$.value as any).data.stock_quantity),
+    };
+console.log(1);
+    if (
+      dataForm.author &&
+      dataForm.title &&
+      dataForm.category &&
+      dataForm.stock_quantity
+    ) {
+      console.log(2);
 
-    // use send to store
-    const dataEdit: IBook = {
-      id: props.objBook.id,
-      name: (form$.value as any).data.name,
-      content: props.objBook.content,
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR053tL-FMuBpFToEfPhMYacjE1cvsATP_S6g&s',
-      price: (form$.value as any).data.price,
-      author: props.objBook.author,
-      category: (form$.value as any).data.category,
-      createdAt: '2022-08-28T17:08:14.008Z',
-      updatedAt: '2030-08-26T17:08:14.008Z',
-      promotion: (form$.value as any).data.promotion + '%',
-      status: (form$.value as any).data.status ? 'active' : 'disable'
+      let imageUrl = 'https://zilo.vn/wp-content/uploads/2022/03/hinh-anh-gai-xinh-tiktok-1.jpg';
+      
+      // Nếu người dùng thay đổi ảnh, thì upload ảnh mới
+      // if (image.value && image.value.name) {
+      //   const formData = new FormData();
+      //   formData.append('file', image.value as any);
+
+      //   const response = await axiosInstance.post('/api/File/upload_image', formData, {
+      //     headers: {
+      //       'Content-Type': 'multipart/form-data', 
+      //     },
+      //   });
+        
+      //   imageUrl = response.data; 
+      // } else {
+      //   imageUrl =  props.objBook.imageUrl; 
+      // }
+      const fillData = removeMatchingFields(dataForm, dataMatch);
+              if (fillData.author) {
+          fillData.author_id = fillData.author;  // Thêm author_id
+          delete fillData.author;                 // Xóa author
+        }
+
+        if (fillData.category) {
+          fillData.category_id = fillData.category;  // Thêm category_id
+          delete fillData.category;                  // Xóa category
+        }
+
+        if (fillData.publisher) {
+          fillData.publisher_id = fillData.publisher;  // Thêm publisher_id
+          delete fillData.publisher;                   // Xóa publisher
+        }
+      const dataSendServer = {
+        id:props.objBook.book_id,  // Giữ nguyên book_id khi chỉnh sửa
+        FieldsToUpdate:{ ...fillData, imageUrl }
+      }
+      console.log("data send server: ",dataSendServer)
+      const result = await axiosInstance.patch('/api/Book', dataSendServer);
+      console.log(3);
+
+      if (result.data.isSuccess) {
+        resetForm();
+        handleSuccessAndReload();
+      } else {
+        console.error('Error updating book: ', result.data.message);
+      }
+    } else {
+      (form$.value as any).validate();
+      if (notiImageEmpty.value) {
+        (form$.value as any).messageBag.prepend('Ảnh không được để trống');
+      }
     }
-    store.editBook(dataEdit)
-    // loading...
-    handleLoadingNotication('Cập nhật thành công!', 1000, 'bottom-center')
+  } catch (error) {
+    console.error('Validation error: ', error);
   }
-}
+};
+
 
 // reset form to natural
 const resetForm = async () => {
-  ;(form$.value as any).update({
+  (form$.value as any).update({
     // updates form data
-    name: props.objBook.name,
+    name: props.objBook.title,
     price: props.objBook.price,
-    promotion: Number(props.objBook.promotion?.replace('%', '')),
     category: props.objBook.category,
     status: props.objBook.status
   })
@@ -95,7 +161,7 @@ onMounted(() => {
       type: 'static',
       tag: 'hr'
     },
-    name: {
+    title: {
       type: 'text',
       rules: ['required', 'max:255'],
       columns: {
@@ -108,7 +174,7 @@ onMounted(() => {
           container: 12
         }
       },
-      default: props.objBook.name,
+      default: props.objBook.title,
       label: 'Tên sách'
     },
     price: {
@@ -119,43 +185,55 @@ onMounted(() => {
         container: 6
       }
     },
-    category: {
-      type: 'select',
-      label: 'Thể loại',
-      items: [
-        {
-          value: 'giao dịch thực chiến',
-          label: 'giao dịch thực chiến'
-        },
-        {
-          value: 'Sách hay',
-          label: 'Sách hay'
-        },
-        {
-          value: 'Sách giao dịch',
-          label: 'Sách giao dịch'
-        },
-        {
-          value: 'Sách đầu tư',
-          label: 'Sách đầu tư'
-        }
-      ],
+    stock_quantity: {
+      type: 'text',
+      label: 'Tồn kho',
+      default: props.objBook.stock_quantity,
       columns: {
         container: 6
-      },
-      default: props.objBook.category
+      }
     },
-    promotion: {
-      type: 'slider',
-      label: 'Giảm giá',
-      default: Number(props.objBook.promotion?.replace('%', '')),
-      min: 0,
-      max: 100
+    
+    category: {
+      type: 'select',
+      label: 'Chủ đề',
+      items: props.selectOptions?.categories ? props.selectOptions.categories.map(category => ({
+    value: category.id,
+    label: category.name
+  })) : [],
+      columns: {
+        container: 12
+      },
+      default: props.objBook.category.category_id
+    },
+    publisher: {
+      type: 'select',
+      label: 'Nhà xuất bản',
+      items: props.selectOptions?.publishers ? props.selectOptions.publishers.map(publisher => ({
+    value: publisher.id,
+    label: publisher.name
+  })) : [],
+      columns: {
+        container: 12
+      },
+      default: props.objBook.publisher.publisher_id
+    },
+    author: {
+      type: 'select',
+      label: 'Tác giả',
+      items: props.selectOptions?.authors ? props.selectOptions.authors.map(author => ({
+    value: author.id,
+    label: author.name
+  })) : [],
+      columns: {
+        container: 12
+      },
+      default: props.objBook.author.author_id
     },
     status: {
       type: 'toggle',
       text: 'Trạng thái',
-      default: props.objBook.status === 'active' ? true : false,
+      default: props.objBook.status  ? true : false,
       columns: {
         container: 12
       }
@@ -181,7 +259,7 @@ onMounted(() => {
           style="visibility: hidden"
         />
         <div class="preview_image">
-          <img :src="preview ? preview : props.objBook.image" class="img-fluid" />
+          <img :src="preview ? preview : props.objBook.imageUrl" class="img-fluid" />
           <template v-if="preview">
             <p class="name_image">Tên ảnh: {{ image.name }}</p>
             <!-- <p class="mb-0">size: {{ image.size / 1024 }}KB</p> -->
@@ -190,7 +268,7 @@ onMounted(() => {
       </div>
     </form>
     <div class="bnt_submit_and_reset">
-      <button @click="submitForm" class="button-55 bnt_submit" role="button">Cập nhật</button>
+      <button @click="submitFormEdit" class="button-55 bnt_submit" role="button">Cập nhật</button>
       <button @click="resetForm" class="button-55 bnt_reset" role="button">Đặt lại</button>
     </div>
   </div>

@@ -1,16 +1,50 @@
-export interface IBook {
-  id: string
-  name: string
-  image: string
-  content: string
-  price: string
-  author: string
-  category: string
-  createdAt: string
-  updatedAt: string
-  promotion?: string
-  status: 'active' | 'disable'
+import { boolean, string } from "@vueform/vueform"
+
+export interface ICategoryInfo {
+  category_id: number;
+  category_name: string;
 }
+
+export interface IAuthorInfo {
+  author_id: number;
+  author_name: string;
+}
+
+export interface IPublisherInfo {
+  publisher_id: number;
+  publisher_name: string;
+}
+
+export interface IBookExtended {
+  book_id: number;
+  title: string;
+  imageUrl: string;
+  price: number;
+  category: ICategoryInfo;  // Thay đổi tên từ infoCategory thành category
+  author: IAuthorInfo;      // Thay đổi tên từ author thành authorInfo
+  publisher: IPublisherInfo; // Thay đổi tên từ publisher thành publisherInfo
+  stock_quantity: number;
+  content_data?: string;
+  status: boolean;
+  ReceiveDate: Date;
+  updatedAt?: Date;
+  isDeleted: boolean;
+  createdBy: number;
+  updatedBy?: number;
+  deleteBy?: number;
+}
+
+export interface ISelectOption {
+  id: number;
+  name: string;
+}
+
+export interface ISelectOptionsOfBook {
+  authors: ISelectOption[];
+  categories: ISelectOption[];
+  publishers: ISelectOption[];
+}
+
 
 export interface IUser {
   name: string
@@ -47,7 +81,7 @@ export interface ICoupon {
   discount: number
   quantity: number
   status: 'active' | 'expired' | 'disable'
-  access: 'public' | 'private'
+  access: '' | 'private'
   expiry_date: Date
   createdAt: Date
   updatedAt: Date

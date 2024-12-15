@@ -1,30 +1,92 @@
 <script lang="ts" setup>
 import type { Header, ClickRowArgument } from 'vue3-easy-data-table'
-import { Ref, ref } from 'vue'
+import { onMounted, Ref, ref } from 'vue'
 import CptModalRight from '@/common/components/CptModalRight.vue'
-import { IBook } from '@/common/interface'
+import { IBookExtended, ISelectOptionsOfBook } from '@/common/interface'
 import ModalEditBook from '@/modules/ManagerBook/Modals/ModalEditBook.vue'
 import CreateBook from '@/modules/ManagerBook/CreateBook.vue'
 import { useListBookStore } from '@/stores/listStores/listBook'
 import CptModalCenter from '@/common/components/CptModalCenter.vue'
 import ModalViewContentBook from '@/modules/ManagerBook/Modals/ModalViewContentBook.vue'
 import ModalEditContentBook from '@/modules/ManagerBook/Modals/ModalEditContentBook.vue'
+import axiosInstance from '@/services/axiosService'
+import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
 
 // cpt modal right
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
   { text: 'Nội dung', value: 'content', width: 130 },
-  { text: 'Tên sách', value: 'name', sortable: true, width: 130 },
-  { text: 'Hình ảnh', value: 'image', width: 100 },
+  { text: 'ID', value: 'book_id', width: 100 },
+  { text: 'Tên sách', value: 'title', sortable: true, width: 130 },
+  { text: 'Hình ảnh', value: 'imageUrl', width: 100 },
   { text: 'Giá', value: 'price' },
-  { text: 'Thể loại', value: 'category', width: 100 },
-  { text: 'Ngày tạo', value: 'createdAt' },
-  { text: 'Cập nhật mới', value: 'updatedAt' },
-  { text: 'Giảm giá', value: 'promotion', width: 50 },
-  { text: 'Trạng thái', value: 'status', width: 100 }
+  { text: 'Chủ đề', value: 'category', width: 150 },
+  { text: 'Tác giả', value: 'author', width: 150 },
+  { text: 'Nhà xuất bản', value: 'publisher', width: 150 },
+  { text: 'Tồn kho', value: 'stock_quantity', width: 100 },
+  { text: 'Trạng thái', value: 'status', width: 100 },
+  { text: 'Ngày nhập', value: 'ReceiveDate', width: 130 },
+  { text: 'ID người tạo', value: 'createdBy', width: 100 },
+  { text: 'Cập nhật', value: 'updatedAt',  width: 130 },
+  { text: 'ID người cập nhật', value: 'updatedBy', width: 100 }
 ]
 
 const store = useListBookStore()
+
+const fncGetAllBookExtended = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Book/extended')
+const backendDataArray = result.data.data;
+const books: IBookExtended[] = backendDataArray.map((backendData: any) => ({
+  book_id: backendData.book_id,
+  title: backendData.title,
+  imageUrl: backendData.imageUrl,
+  price: backendData.price,
+  category: {
+    category_id: backendData.category_id,
+    category_name: backendData.category_name
+  },
+  author: {
+    author_id: backendData.author_id,
+    author_name: backendData.author_name
+  },
+  publisher: {
+    publisher_id: backendData.publisher_id,  
+    publisher_name: backendData.publisher_name
+  },
+  stock_quantity: backendData.stock_quantity,
+  content_data: backendData.content_data,
+  status: backendData.status,
+  ReceiveDate: new Date(backendData.receiveDate),  // Chuyển đổi chuỗi thành Date
+  updatedAt: backendData.updatedAt ? new Date(backendData.updatedAt) : undefined,  // Kiểm tra nếu có updatedAt
+  isDeleted: backendData.isDeleted,
+  createdBy: backendData.createdBy,
+  updatedBy: backendData.updatedBy ?? undefined,  // Nếu null thì trả về undefined
+  deleteBy: backendData.deleteBy ?? undefined   // Nếu null thì trả về undefined
+}));
+console.log(books);
+    store.items = books
+  } catch (error) {
+    console.log('error: ', error)
+    store.items = []
+  }
+}
+fncGetAllBookExtended()
+
+// get select option
+const selectOptions = ref<ISelectOptionsOfBook | null>(null);
+console.log("cjeck var: ",selectOptions.value)
+console.log("check true: ",selectOptions.value ? "true" : "false")
+  const fncGetValueOptions = async () => {
+    try {
+      const result = await axiosInstance.get('/api/Book/select-options')
+      console.log('result: ', result)
+      selectOptions.value = result.data.data[0]
+    } catch (error) {
+      console.log('error: ', error)
+    }
+  }
+  fncGetValueOptions()
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -36,23 +98,39 @@ const disableModalVertical: Ref<boolean> = ref(false)
 const checkDelete: Ref<boolean> = ref(false)
 const checkEdit: Ref<boolean> = ref(false)
 
+  const dataEmptyBook = {
+    book_id : 0,
+   title: '', 
+  imageUrl: '',
+   price: 0,
+   category: {
+    category_id: 0,
+    category_name:'',
+   }, 
+  author: {
+    author_id : 0,
+    author_name: '',
+  },
+   publisher: {
+  publisher_id: 0 ,
+   publisher_name: '', 
+   },
+   stock_quantity: 0, 
+   content_data: undefined, 
+   status: false, 
+   ReceiveDate : new Date(),
+   updatedAt: undefined,
+   isDeleted : false,
+   createdBy : 0,
+   updatedBy: undefined, 
+   deleteBy: undefined 
+  }
+
 const handleClickCloseModalVertical = async () => {
   activeModalVertical.value = false
   disableModalVertical.value = true
-
   // reset data component
-  bookData.value = {
-    id: '',
-    name: '',
-    content: '',
-    image: '',
-    price: '0',
-    author: '',
-    category: '',
-    createdAt: '',
-    updatedAt: '',
-    status: 'disable'
-  }
+  bookData.value = dataEmptyBook
 }
 
 // handle delete book
@@ -79,18 +157,7 @@ const handleShowFalse = () => {
   showModal.value = false
 
   // reset data component
-  bookData.value = {
-    id: '',
-    name: '',
-    content: '',
-    image: '',
-    price: '0',
-    author: '',
-    category: '',
-    createdAt: '',
-    updatedAt: '',
-    status: 'disable'
-  }
+  bookData.value =dataEmptyBook
 }
 // handle edit content book
 const handleEditContentBook = async () => {
@@ -112,22 +179,17 @@ setTimeout(() => {
 }, 1000)
 
 // onclick
-const bookData = ref<IBook>({
-  id: '',
-  name: '',
-  image: '',
-  content: '',
-  price: '0',
-  author: '',
-  category: '',
-  createdAt: '',
-  updatedAt: '',
-  status: 'disable'
-})
-const showRow = (val: ClickRowArgument) => {
-  console.log('val: ', val)
+const bookData = ref<IBookExtended>(
+dataEmptyBook)
+const showRow = async (val: ClickRowArgument) => {
   if (checkDelete.value) {
-    store.deleteBook(val.id)
+    const result = await axiosInstance.delete('/api/Book', { params: { id: val.book_id } })
+    if (result.data.isSuccess) {
+      handleLoadingNotication('Xóa thành công', 500, 'top-center')
+      store.deleteBook(val.book_id)
+    } else {
+      handleLoadingNoticationError('có lỗi xảy ra!', 500, 'top-center')
+    }
     checkDelete.value = false
   } else {
     delete val.indexInCurrentPage
@@ -154,7 +216,9 @@ const showRow = (val: ClickRowArgument) => {
             <input placeholder="nhập từ tìm kiếm" type="text" v-model="searchValue" />
           </div>
         </div>
-        <CreateBook />
+        <CreateBook  
+        v-if="selectOptions"
+          :selectOptions="selectOptions"/>
       </div>
       <EasyDataTable
         class="customize-table"
@@ -169,9 +233,7 @@ const showRow = (val: ClickRowArgument) => {
         :loading="loading"
         :rows-per-page="10"
         :rows-items="[10, 15, 20, 25]"
-        show-index-symbol="TT"
         rows-per-page-message="Số hàng"
-        show-index
         @click-row="showRow"
         sort-by="sortBy"
         sort-type="sortType"
@@ -189,7 +251,7 @@ const showRow = (val: ClickRowArgument) => {
         </template>
 
         <!--template for name, example name book,...-->
-        <template #item-name="{ name }">
+        <template #item-title="{ title }">
           <p
             style="
               display: -webkit-box;
@@ -200,12 +262,63 @@ const showRow = (val: ClickRowArgument) => {
               font-weight: 500;
             "
           >
-            {{ name }}
+            {{ title }}
+          </p>
+        </template>
+
+        <template #item-category="{ category }">
+          <p
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-weight: 500;
+            "
+          >
+            {{ category.category_id }}
+            <br/>
+            {{category.category_name }}
+          </p>
+        </template>
+
+        <template #item-author="{ author }">
+          <p
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-weight: 500;
+            "
+          >
+          {{ author.author_id }}
+            <br/>
+            {{author.author_name }}
+          </p>
+        </template>
+
+        <template #item-publisher="{ publisher }">
+          <p
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-weight: 500;
+            "
+          >
+          {{ publisher.publisher_id }}
+            <br/>
+            {{publisher.publisher_name }}
           </p>
         </template>
 
         <!--template for image, example image book,...-->
-        <template #item-image="{ image }">
+        <template #item-imageUrl="{ imageUrl }">
           <div
             class="img"
             style="
@@ -217,7 +330,7 @@ const showRow = (val: ClickRowArgument) => {
               cursor: pointer;
             "
           >
-            <img :src="image" alt="hình ảnh sách" style="width: 60px; height: 70px; padding: 6px" />
+            <img :src="imageUrl" alt="hình ảnh sách" style="width: 60px; height: 70px; padding: 6px" />
           </div>
         </template>
 
@@ -259,8 +372,8 @@ const showRow = (val: ClickRowArgument) => {
         <!--template for status ( active, disable )-->
         <template #item-status="{ status }">
           <div class="status">
-            <div :class="[status == 'active' ? 'active' : 'error']" style="padding: 4px 20px">
-              {{ status == 'active' ? 'Active' : 'Disable' }}
+            <div :class="[status  ? 'active' : 'error']" style="padding: 4px 20px">
+              {{ status ? 'Active' : 'Disable' }}
             </div>
           </div>
         </template>
@@ -272,9 +385,10 @@ const showRow = (val: ClickRowArgument) => {
         @handle-click-close-modal="handleClickCloseModalVertical"
       >
         <ModalEditBook
-          v-if="activeModalVertical && bookData.name"
+          v-if="activeModalVertical && bookData.title && selectOptions"
           :is="ModalEditBook"
           :objBook="bookData"
+          :selectOptions="selectOptions"
         ></ModalEditBook>
       </CptModalRight>
 
@@ -284,9 +398,9 @@ const showRow = (val: ClickRowArgument) => {
         :show="showModal"
         :handleShowFalse="handleShowFalse"
       >
-        <ModalViewContentBook v-if="checkHandleView && bookData.name" :bookData="bookData">
+        <ModalViewContentBook v-if="checkHandleView && bookData.title" :bookData="bookData">
         </ModalViewContentBook>
-        <ModalEditContentBook v-else-if="checkHandleEdit && bookData.name" :bookData="bookData">
+        <ModalEditContentBook v-else-if="checkHandleEdit && bookData.title" :bookData="bookData">
         </ModalEditContentBook>
       </CptModalCenter>
     </div>

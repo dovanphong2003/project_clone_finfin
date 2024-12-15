@@ -3,12 +3,32 @@ import { ref } from 'vue'
 import 'vue3-toastify/dist/index.css'
 import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
 import { useListBookStore } from '@/stores/listStores/listBook'
+import { ISelectOptionsOfBook } from '@/common/interface';
+import { createdIdAuto } from '@/common/functions/createIdAuto';
+import axiosInstance from '@/services/axiosService';
+import Swal from 'sweetalert2';
+const props = defineProps({
+  selectOptions: {
+    type: Object as () => ISelectOptionsOfBook | any,
+    required:true
+  }
+})
 
+const handleSuccessAndReload = async () => {
+  // Hiển thị thông báo với SweetAlert2
+  await Swal.fire({
+    title: 'Tạo thành công!',
+    icon: 'success',
+    confirmButtonText: 'OK'
+  });
+
+  // Reload trang sau khi người dùng bấm OK
+  window.location.reload();
+};
 // use get data of form
 const form$ = ref(null)
 // use upload image
 const preview = ref('')
-const image = ref<Partial<ImageFile>>({}) // Partial để có thể khởi tạo rỗng
 const notiImageEmpty = ref(false)
 const store = useListBookStore()
 interface ImageFile {
@@ -17,6 +37,8 @@ interface ImageFile {
   type: string
   lastModified: number
 }
+const image = ref<Partial<ImageFile>>({}) // Partial để có thể khởi tạo rỗng
+
 // fnc
 const previewImage = (event) => {
   var input = event.target
@@ -42,36 +64,42 @@ const submitForm = async () => {
     if (!image.value.name) notiImageEmpty.value = true
     const dataForm = {
       ...(form$.value as any).data,
-      infoImage: image.value,
-      base64Image: preview.value
+      book_id:createdIdAuto(),
+      createdBy:123456788,
+      ReceiveDate: new Date(),
+      price: Number((form$.value as any).data.price),
+      stock_quantity: Number((form$.value as any).data.stock_quantity),
     }
-    console.log('haha: ', { ...(form$.value as any).data })
     if (
-      dataForm.author &&
-      dataForm.base64Image &&
-      dataForm.name &&
+      dataForm.author_id &&
+      dataForm.title &&
       dataForm.price &&
-      dataForm.category &&
-      dataForm.infoImage &&
-      dataForm.infoImage.name
+      dataForm.category_id &&
+      image.value.name &&
+      dataForm.stock_quantity
     ) {
-      store.addBook({
-        ...(form$.value as any).data,
-        promotion: (form$.value as any).data.promotion + '%',
-        status: (form$.value as any).data.status ? 'active' : 'disable',
-        createdAt: '2026-02-26T17:08:14.008Z',
-        updatedAt: '2028-06-26T17:08:14.008Z',
-        image:
-          'https://www.vam.ac.uk/dw/image/v2/BDFC_PRD/on/demandware.static/-/Sites-VAM_MasterShop/default/dw87c877b6/pdp-images/products/168123-fragile-beauty-exhibition-book-cover.png?sw=520&sh=520'
-      })
-      handleLoadingNotication('Tạo thành công!', 800, 'top-right')
-      resetForm()
+      console.log("from: ",dataForm);
+       // upload image
+       const formData = new FormData();
+        formData.append('file', image.value as any); // 'file' là tên trường mà API mong đợi
+
+// Gửi dữ liệu tới API
+      const urlImage = await axiosInstance.post('/api/File/upload_image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',  // Đảm bảo gửi với Content-Type là 'multipart/form-data'
+        },
+      });
+        const result = await axiosInstance.post('/api/Book', {...dataForm,imageUrl: urlImage.data})
+      if(result.data.isSuccess) {
+        resetForm()
+        handleSuccessAndReload();
+      }
     } else {
-      ;(form$.value as any)
+      (form$.value as any)
         .validate()(form$.value as any)
         .validate()
       if (notiImageEmpty.value) {
-        ;(form$.value as any).messageBag.prepend('Ảnh không được để trống')
+        (form$.value as any).messageBag.prepend('Ảnh không được để trống')
       }
     }
     // Thực hiện các hành động khác như gửi dữ liệu tới server
@@ -83,22 +111,30 @@ const submitForm = async () => {
 
 // reset form to natural
 const resetForm = async () => {
-  ;(form$.value as any)
-    .reset()(form$.value as any)
-    .messageBag.clearPrepended('errors') // clears prepended errors
-  notiImageEmpty.value = false
-  preview.value = ''
-  image.value = {}
-  handleLoading(300)
+  // Reset form
+  (form$.value as any).reset();
+
+  // Dọn dẹp các lỗi đã được thêm vào (clear prepended errors)
+  (form$.value as any).messageBag.clearPrepended('errors');
+
+  // Reset các giá trị khác
+  notiImageEmpty.value = false;
+  preview.value = '';
+  image.value = {};  // Đảm bảo image là một object rỗng
+
+  // Đảm bảo handle loading chờ sau 300ms
+  handleLoading(300);
 }
+
 </script>
 
 <template>
   <div class="content_modal">
     <Vueform ref="form$" validate-on="change">
       <StaticElement name="divider" tag="hr" />
+
       <TextElement
-        name="name"
+        name="title"
         :rules="['required', 'max:255']"
         :messages="{
           required: 'Không được bỏ trống tên',
@@ -115,22 +151,60 @@ const resetForm = async () => {
           }
         }"
         label="Tên sách"
-      />
-      <TextElement
+        />
+        <TextElement
+        name="stock_quantity"
+        :rules="['required', 'max:30']"
+        :messages="{
+          required: 'Không được bỏ trống số lượng',
+          max: 'Số lượng được vượt quá 30 ký tự'
+        }"
+        :columns="{
+          default: {
+            container: 6,
+            label: 12,
+            wrapper: 12
+          },
+          lg: {
+            container: 6
+          }
+        }"
+        label="Số lượng"
+        />
+        <TextElement
         name="price"
         label="Giá"
         :columns="{
           container: 6
         }"
-        placeholder="eg: 500,000đ"
+        placeholder="eg: 500.000đ"
         :rules="['required']"
         :messages="{
           required: 'Giá không được để trống'
         }"
       />
-      <TextElement
-        name="author"
+      <SelectElement
+        name="category_id"
+        label="Chủ đề"
+        :items="props.selectOptions?.categories ? props.selectOptions.categories.map(category => ({
+    value: category.id,
+    label: category.name
+  })) : []"
+        :columns="{
+          container: 6
+        }"
+        :rules="['required']"
+        :messages="{
+          required: 'Chủ đề không được để trống'
+        }"
+      />
+      <SelectElement
+        name="author_id"
         label="Tác giả"
+        :items="props.selectOptions?.authors ? props.selectOptions.authors.map(author => ({
+    value: author.id,
+    label: author.name
+  })) : []"
         :columns="{
           container: 6
         }"
@@ -140,61 +214,28 @@ const resetForm = async () => {
         }"
       />
       <SelectElement
-        name="category"
-        label="Thể loại"
-        :items="[
-          {
-            value: 'giao dịch thực chiến',
-            label: 'giao dịch thực chiến'
-          },
-          {
-            value: 'Sách hay',
-            label: 'Sách hay'
-          },
-          {
-            value: 'Sách giao dịch',
-            label: 'Sách giao dịch'
-          },
-          {
-            value: 'Sách đầu tư',
-            label: 'Sách đầu tư'
-          }
-        ]"
+        name="publisher_id"
+        label="Nhà xuất bản"
+        :items="props.selectOptions?.publishers ? props.selectOptions.publishers.map(publisher => ({
+    value: publisher.id,
+    label: publisher.name
+  })) : []"
         :columns="{
           container: 6
         }"
         :rules="['required']"
         :messages="{
-          required: 'Thể loại không được để trống'
-        }"
-      />
-      <TextElement
-        name="content"
-        label="Nội dung"
-        :columns="{
-          container: 12
+          required: 'Nhà xuất bản không được để trống'
         }"
       />
       <ToggleElement
-        name="status"
-        :columns="{
-          container: 6
-        }"
-        align="left"
-        label="Trạng thái"
-      />
-      <SliderElement
-        name="promotion"
-        label="Giảm giá"
-        :min="0"
-        :max="100"
-        :default="0"
-        :columns="{
-          lg: {
+          name="status"
+          :columns="{
             container: 6
-          }
-        }"
-      />
+          }"
+          align="left"
+          label="Trạng thái"
+        />
     </Vueform>
     <form>
       <div class="form-group">

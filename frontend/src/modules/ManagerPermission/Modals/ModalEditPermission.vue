@@ -2,7 +2,10 @@
 import { defineProps } from 'vue'
 import type { IPermission } from '@/common/interface'
 import { useListPermissionStore } from '@/stores/listStores/listPermission'
-import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
+import { handleLoading, handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
+import { MODULES } from '@/common/shareVariable';
+import axiosInstance from '@/services/axiosService';
+import { removeMatchingFields } from '@/common/functions/removeMatchingFields';
 
 const props = defineProps({
   objPermission: {
@@ -10,47 +13,59 @@ const props = defineProps({
     required: true
   }
 })
-
-// data fake for module
-const ALL_MODULES = {
-  AUTH: 'AUTH',
-  COMPANIES: 'COMPANIES',
-  FILES: 'FILES',
-  JOBS: 'JOBS',
-  PERMISSIONS: 'PERMISSIONS',
-  RESUMES: 'RESUMES',
-  ROLES: 'ROLES',
-  USERS: 'USERS',
-  SUBSCRIBERS: 'SUBSCRIBERS'
-}
-const items = Object.keys(ALL_MODULES).map((key) => ({
+const items = Object.keys(MODULES).map((key) => {
+  return ({
   label: key,
-  value: ALL_MODULES[key]
-}))
+  value: MODULES[key]
+})})
 
 const store = useListPermissionStore()
 
-const formatFormData = ({ name, api, method, module }) => {
-  handleLoading(600)
-  const dataEdit: IPermission = {
-    name: name,
-    api: api,
-    method: method,
-    module: module,
-    createdAt: '2022-02-26T17:08:14.008Z',
-    updatedAt: '2024-06-26T17:08:14.008Z'
+const formatFormData = async ({ name, path, method, module,description }) => {
+  if(path === props.objPermission.path && 
+  name === props.objPermission.name && 
+  method === props.objPermission.method && 
+  module === props.objPermission.module && 
+  description === props.objPermission.description  ) 
+  {
+    handleLoadingNoticationError('Không có sự thay đổi nào cả!', 600, 'top-center')
+    return;
   }
-  const nameOrigin = props.objPermission.name
-  console.log('name origin: ', nameOrigin)
-  store.editPermission(dataEdit, nameOrigin)
-  return {
-    // return obj use send to server
+  const resultFill = {
+    ...removeMatchingFields({name,
+      path,
+      method: method,
+      module: module,
+      description: description}, props.objPermission),
+    }
+    const dataSendServer: any = {
+      id:props.objPermission.permission_id,
+              FieldsToUpdate: { ...resultFill,
+      updatedAt: new Date(),
+      updatedBy:12353453, }
+            }
+  try {
+    const result = await axiosInstance.patch('/api/Permission', dataSendServer)
+    if (result.data.isSuccess) {
+      store.editPermission({
+        permission_id:props.objPermission.permission_id,
+     ...resultFill,
+      updatedAt: new Date(),
+      updatedBy:12353453,
+      } as any, props.objPermission.permission_id)
+      handleLoadingNotication('Cập nhật thành công', 600, 'top-right')
+    } else {
+      handleLoadingNoticationError('Cập nhật không thành công!', 600, 'top-center')
+    }
+  } catch (error) {
+    handleLoadingNoticationError('Có lỗi đã xảy ra:' + error, 600, 'top-right')
   }
+  
 }
 </script>
 <template>
   <div class="modal_content_right">
-    <Vueform endpoint="/form/submit" method="post" :format-data="formatFormData">
+    <Vueform :endpoint="false"  :format-data="formatFormData">
       <StaticElement name="divider_1" tag="hr" />
       <TextElement
         name="name"
@@ -64,16 +79,16 @@ const formatFormData = ({ name, api, method, module }) => {
         :default="objPermission.name"
       />
       <TextElement
-        name="api"
+        name="path"
         :columns="{
           container: 6
         }"
-        label="API"
+        label="api"
         :rules="['required']"
         :messages="{
           required: 'Không được bỏ trống api'
         }"
-        :default="objPermission.api"
+        :default="objPermission.path"
       />
       <SelectElement
         name="method"
@@ -114,6 +129,18 @@ const formatFormData = ({ name, api, method, module }) => {
         :messages="{
           required: 'Không được bỏ trống module'
         }"
+      />
+      <TextElement
+        name="description"
+        :columns="{
+          container: 12
+        }"
+        label="Mô tả"
+        :rules="['max:100']"
+        :messages="{
+          max: 'Mô tả không được vượt quá 100 ký tự',
+        }"
+        :default="objPermission.description"
       />
       <StaticElement name="divider_4" tag="hr" />
       <ButtonElement

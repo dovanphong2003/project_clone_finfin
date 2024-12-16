@@ -2,22 +2,38 @@
 import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
 // cpt modal right
 import ModalEditPermission from '@/modules/ManagerPermission/Modals/ModalEditPermission.vue'
-import { handleLoadingNotication } from '@/common/functions/loading'
+import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
 import { ref, type Ref } from 'vue'
 import type { IPermission } from '@/common/interface'
 import CptModalRight from '@/common/components/CptModalRight.vue'
 import { useListPermissionStore } from '@/stores/listStores/listPermission'
 import CreatePermission from '@/modules/ManagerPermission/CreatePermission.vue'
+import axiosInstance from '@/services/axiosService'
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
+  { text: 'ID', value: 'permission_id', sortable: true, width: 130 },
   { text: 'Tên', value: 'name', sortable: true, width: 130 },
-  { text: 'API', value: 'api' },
+  { text: 'API', value: 'path' },
   { text: 'Phương Thức', value: 'method', width: 100 },
   { text: 'Module', value: 'module', width: 100 },
+  { text: 'Mô tả', value: 'description', width: 200 },
   { text: 'Ngày tạo', value: 'createdAt', width: 200 },
-  { text: 'Cập nhật mới', value: 'updatedAt', width: 200 }
+  { text: 'Cập nhật mới', value: 'updatedAt', width: 200 },
+  { text: 'Người tạo', value: 'createdBy', width: 200 },
+  { text: 'Người cập nhật', value: 'updatedBy', width: 200 }
 ]
 const store = useListPermissionStore()
+const fncGetAllPermission = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Permission')
+    store.items = result.data.data
+    console.log('result: ', result)
+  } catch (error) {
+    console.log('error: ', error)
+    store.items = []
+  }
+}
+fncGetAllPermission()
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -29,26 +45,25 @@ const disableModalVertical: Ref<boolean> = ref(false)
 const checkDelete: Ref<boolean> = ref(false)
 const checkEdit: Ref<boolean> = ref(false)
 
-// onclick
-const UserData = ref<IPermission>({
+const dataEmpty:IPermission = {
+  permission_id: 0,
   name: '',
-  api: '',
+  path: '',
   method: '',
   module: '',
-  createdAt: '',
-  updatedAt: ''
-})
+  description:'',
+  createdAt: new Date(),
+  updatedAt: undefined,
+  isDeleted:false,
+  createdBy: 0,
+  updatedBy:0,
+}
+// onclick
+const UserData = ref<IPermission>(dataEmpty)
 const handleClickCloseModalVertical = async () => {
   activeModalVertical.value = false
   disableModalVertical.value = true
-  UserData.value = {
-    name: '',
-    api: '',
-    method: '',
-    module: '',
-    createdAt: '',
-    updatedAt: ''
-  }
+  UserData.value = dataEmpty
 }
 
 // handle deletePermission
@@ -68,10 +83,15 @@ setTimeout(() => {
   loading.value = false
 }, 1000)
 
-const showRow = (val: ClickRowArgument) => {
+const showRow = async (val: ClickRowArgument) => {
   if (checkDelete.value) {
-    handleLoadingNotication('Xóa thành công', 500, 'bottom-center')
-    store.deletePermission(val.email)
+    const result = await axiosInstance.delete('/api/Permission', { params: { id: val.permission_id } })
+    if (result.data.isSuccess) {
+      handleLoadingNotication('Xóa thành công', 500, 'top-center')
+      store.deletePermission(val.permission_id)
+    } else {
+      handleLoadingNoticationError('có lỗi xảy ra!', 500, 'top-center')
+    }
     checkDelete.value = false
   } else {
     delete val.indexInCurrentPage

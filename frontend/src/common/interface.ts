@@ -67,12 +67,18 @@ export interface IRole {
 }
 
 export interface IPermission {
+  permission_id: number
   name: string
-  api: string
+  path: string
   method: string
   module: string
-  createdAt: string
-  updatedAt: string
+  description:string
+  createdAt: Date
+  updatedAt?: Date
+  isDeleted:boolean
+  createdBy: number;
+  updatedBy?: number;
+  deleteBy?: number;
 }
 
 export interface ICoupon {

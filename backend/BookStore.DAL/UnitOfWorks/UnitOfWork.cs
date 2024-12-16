@@ -16,13 +16,14 @@ namespace BookStore.DAL.UnitOfWorks
     {
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
-        private readonly IConfiguration _configuration;
         private bool _disposed = false;
 
         public IBookRepository BookRepository { get; }
         public ICategoryRepository CategoryRepository { get; }
         public IAuthorRepository AuthorRepository { get; }
         public IPublisherRepository PublisherRepository { get; }
+
+        public IPermissionRepository PermissionRepository { get; }
 
         public UnitOfWork(DbContext dbContext, IConfiguration configuration)
         {
@@ -34,6 +35,7 @@ namespace BookStore.DAL.UnitOfWorks
             CategoryRepository = new CategoryRepository(_connection, _transaction);
             AuthorRepository = new AuthorRepository(_connection, _transaction);
             PublisherRepository = new PublisherRepository(_connection, _transaction);
+            PermissionRepository = new PermissionRepository(_connection, _transaction);
         }
 
         public void Commit()

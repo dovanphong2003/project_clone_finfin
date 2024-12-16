@@ -329,7 +329,22 @@ namespace BookStore.DAL.Repositories
                 publisher.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));
             }
 
-
+            // mapping for table permission
+            if (item is Permission permission)
+            {
+                permission.permission_id = reader.GetInt64(reader.GetOrdinal("permission_id"));
+                permission.name = reader.GetString(reader.GetOrdinal("name"));
+                permission.path = reader.GetString(reader.GetOrdinal("path"));
+                permission.method = reader.GetString(reader.GetOrdinal("method"));
+                permission.module = reader.GetString(reader.GetOrdinal("module"));
+                permission.description = reader.IsDBNull(reader.GetOrdinal("description")) ? null : reader.GetString(reader.GetOrdinal("description"));
+                permission.createdAt = reader.GetDateTime(reader.GetOrdinal("createdAt"));
+                permission.updatedAt = reader.IsDBNull(reader.GetOrdinal("updatedAt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("updatedAt"));
+                permission.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));
+                permission.createdBy = reader.GetInt64(reader.GetOrdinal("createdBy"));
+                permission.updatedBy = reader.IsDBNull(reader.GetOrdinal("updatedBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("updatedBy"));
+                permission.deleteBy = reader.IsDBNull(reader.GetOrdinal("deleteBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("deleteBy"));
+            }
 
             // Các ánh xạ khác nếu cần
             return item;

@@ -7,181 +7,81 @@ import {
 } from '@/common/functions/loading'
 import { ref } from 'vue'
 import { IRole } from '@/common/interface'
+import { createdIdAuto } from '@/common/functions/createIdAuto';
+import axiosInstance from '@/services/axiosService';
+import { format } from 'date-fns';
+
+const props = defineProps({
+  arrayConvertPermission: {
+    type: Object as () => any,
+    required: true
+  }
+})
+console.log("quyền: ",props.arrayConvertPermission)
 const store = useListRoleStore()
 const form$ = ref<any>(null)
+const toggledIndices = ref<number[]>([])
+const toggledIndicesParent = ref<number[]>([])
 const submitForm = async (e) => {
   e.preventDefault()
+  console.log(toggledIndices)
   await form$.value.validate()
   if (form$.value.messageBag.baseErrors.length == 0) {
-    const valueSubmit: IRole = {
-      nameRole: form$.value.data.name_role,
+    const valueUpToStore: IRole = {
+      role_id: createdIdAuto(),
+      name: form$.value.data.name,
       status: form$.value.data.toggle,
-      description: form$.value.data.des,
-      objPermission: toggledIndices.value,
-      createdAt: '2024-02-26T17:08:14.008Z',
-      updatedAt: '2024-08-26T17:08:14.008Z'
+      description: form$.value.data.description,
+      ArrIdPermission: toggledIndices.value,
+      createdAt: new Date(),
+      updatedAt: undefined,
+      isDeleted:false,
     }
-    store.addRole(valueSubmit)
-    handleLoadingNotication('Tạo thành công', 500, 'top-center')
-    toggledIndices.value = []
+    try {
+    const result = await axiosInstance.post('/api/Role', {...valueUpToStore,updatedAt:null})
+    if (result.data.isSuccess) {
+      store.addRole({
+        ...valueUpToStore,
+        createdAt: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS"),
+      } as any)
+      handleLoadingNotication('Tạo thành công', 600, 'top-right')
+      toggledIndices.value = []
     toggledIndicesParent.value = []
     form$.value.reset()
+    } else {
+      handleLoadingNoticationError('Tạo không thành công!', 600, 'top-center')
+    }
+  } catch (error) {
+    handleLoadingNoticationError('Có lỗi đã xảy ra:' + error, 600, 'top-right')
+  }
   } else {
     handleLoadingNoticationError('Vui lòng kiểm tra lại !', 500, 'top-center')
   }
 }
-const objectDataAllPermission = [
-  {
-    permissionName: 'COMPANIES',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies1',
-        des: 'get company with paginate'
-      },
-      {
-        type: 'POST',
-        api: '/api/v1/companies2',
-        des: 'post company'
-      },
-      {
-        type: 'GET',
-        api: '/api/v1/companies3',
-        des: 'get company '
-      },
-      {
-        type: 'DELETE',
-        api: '/api/v1/companies4',
-        des: 'delete company'
-      },
-      {
-        type: 'PATCH',
-        api: '/api/v1/companies5',
-        des: 'update company'
-      }
-    ]
-  },
-  {
-    permissionName: 'USERS',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies6',
-        des: 'get company with paginate'
-      },
-      {
-        type: 'POST',
-        api: '/api/v1/companies7',
-        des: 'post company'
-      },
-      {
-        type: 'GET',
-        api: '/api/v1/companies8',
-        des: 'get company '
-      },
-      {
-        type: 'DELETE',
-        api: '/api/v1/companies9',
-        des: 'delete company'
-      },
-      {
-        type: 'PATCH',
-        api: '/api/v1/companies10',
-        des: 'update company'
-      }
-    ]
-  },
-  {
-    permissionName: 'ROLES',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies11',
-        des: 'get company with paginate'
-      },
-      {
-        type: 'POST',
-        api: '/api/v1/companies12',
-        des: 'post company'
-      },
-      {
-        type: 'GET',
-        api: '/api/v1/companies13',
-        des: 'get company '
-      },
-      {
-        type: 'DELETE',
-        api: '/api/v1/companies14',
-        des: 'delete company'
-      },
-      {
-        type: 'PATCH',
-        api: '/api/v1/companies15',
-        des: 'update company'
-      }
-    ]
-  },
-  {
-    permissionName: 'PRODUCT',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies16',
-        des: 'get company with paginate'
-      },
-      {
-        id: 16,
-        type: 'POST',
-        api: '/api/v1/companies17',
-        des: 'post company'
-      },
-      {
-        id: 17,
-        type: 'GET',
-        api: '/api/v1/companies18',
-        des: 'get company '
-      },
-      {
-        id: 18,
-        type: 'DELETE',
-        api: '/api/v1/companies19',
-        des: 'delete company'
-      },
-      {
-        id: 19,
-        type: 'PATCH',
-        api: '/api/v1/companies20',
-        des: 'update company'
-      }
-    ]
-  }
-]
-const toggledIndices = ref<string[]>([])
-const toggledIndicesParent = ref<number[]>([])
 
-const handleClick = (api: string): void => {
-  const position = toggledIndices.value.indexOf(api)
+const handleClick = (id: number): void => {
+  const position = toggledIndices.value.indexOf(id)
   if (position === -1) {
-    toggledIndices.value.push(api)
+    toggledIndices.value.push(id)
   } else {
     toggledIndices.value.splice(position, 1)
   }
 }
 const handleClickParent = (parentIndex: number) => {
-  const permission = objectDataAllPermission[parentIndex]
+  const permission = props.arrayConvertPermission[parentIndex]
   const positionParent = toggledIndicesParent.value.indexOf(parentIndex)
   if (positionParent === -1) {
     toggledIndicesParent.value.push(parentIndex)
     permission.dataPermission.forEach((item) => {
-      const position = toggledIndices.value.indexOf(item.api)
+      const position = toggledIndices.value.indexOf(item.id)
       if (position === -1) {
-        toggledIndices.value.push(item.api)
+        toggledIndices.value.push(item.id)
       }
     })
   } else {
     toggledIndicesParent.value.splice(positionParent, 1)
     permission.dataPermission.forEach((item) => {
-      const position = toggledIndices.value.indexOf(item.api)
+      const position = toggledIndices.value.indexOf(item.id)
       if (!(position === -1)) {
         toggledIndices.value.splice(position, 1)
       }
@@ -198,7 +98,7 @@ const handleClickImg = (e) => {
     <!--form info role-->
     <Vueform ref="form$">
       <TextElement
-        name="name_role"
+        name="name"
         label="Tên Role"
         :columns="{
           container: 6
@@ -222,7 +122,7 @@ const handleClickImg = (e) => {
         }"
       />
       <TextElement
-        name="des"
+        name="description"
         label="Miêu tả"
         :rules="['required']"
         :messages="{
@@ -238,7 +138,7 @@ const handleClickImg = (e) => {
     <ul>
       <li
         class="li_content_modal"
-        v-for="(permission, index) in objectDataAllPermission"
+        v-for="(permission, index) in props.arrayConvertPermission"
         :key="index"
       >
         <div class="panel-body panel-body_group">
@@ -257,8 +157,8 @@ const handleClickImg = (e) => {
             <div class="panel-body">
               <!--Only code you need is this label-->
               <label class="switch">
-                <input :class="{ toggle: toggledIndices.includes(item.api) }" type="checkbox" />
-                <div @click="handleClick(item.api)" class="slider round"></div>
+                <input :class="{ toggle: toggledIndices.includes(item.id) }" type="checkbox" />
+                <div @click="handleClick(item.id)" class="slider round"></div>
               </label>
               <div class="info_switch">
                 <p>{{ item.des }}</p>

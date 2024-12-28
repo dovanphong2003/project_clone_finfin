@@ -1,24 +1,40 @@
 <script lang="ts" setup>
 import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
 import { useListRoleStore } from '@/stores/listStores/listRole'
-import { handleLoadingNotication } from '@/common/functions/loading'
+import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
 import { Ref, ref } from 'vue'
 import type { IRole } from '@/common/interface'
 import CreateRole from '@/modules/ManagerRole/CreateRole.vue'
 import CptModalCenter from '@/common/components/CptModalCenter.vue'
 import ModalEditRole from '@/modules/ManagerRole/Modals/ModalEditRole.vue'
+import { useListPermissionStore } from '@/stores/listStores/listPermission'
+import axiosInstance from '@/services/axiosService'
 
 // header for table
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
-  { text: 'Vai trò', value: 'nameRole', sortable: true, width: 130 },
+  { text: 'ID', value: 'role_id', width: 130 },
+  { text: 'Vai trò', value: 'name', sortable: true, width: 130 },
+  { text: 'Mô tả', value: 'description', width: 130 },
   { text: 'Ngày tạo', value: 'createdAt', width: 200 },
   { text: 'Cập nhật mới', value: 'updatedAt', width: 200 },
-  { text: 'Trạng thái', value: 'status', width: 100 }
+  { text: 'Trạng thái', value: 'status', width: 130 },
 ]
 
 // store role
 const storeRole = useListRoleStore()
+// call api get data all Role and arr permission of role
+const fncGetAllRole = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Role')
+    storeRole.items = result.data.data
+    console.log('result: ', result)
+  } catch (error) {
+    console.log('error: ', error)
+    storeRole.items = []
+  }
+}
+fncGetAllRole()
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -36,23 +52,82 @@ setTimeout(() => {
   loading.value = false
 }, 1000)
 
+// get all permission
+const store = useListPermissionStore()
+let arrayConvertPermission = ref()
+
+const convertPermissions = (permissions) => {
+  // Tạo một map để nhóm theo module
+  const groupedPermissions = {};
+
+  permissions.forEach(permission => {
+    // Tạo đối tượng DataPermission từ mỗi permission
+    const dataPermission = {
+      id: permission.permission_id, // sử dụng permission_id làm id
+      type: permission.method, // phương thức HTTP
+      api: permission.path, // đường dẫn API
+      des: permission.description || '', // mô tả
+    };
+
+    // Nhóm theo module
+    if (!groupedPermissions[permission.module]) {
+      groupedPermissions[permission.module] = [];
+    }
+    groupedPermissions[permission.module].push(dataPermission);
+  });
+
+  // Tạo mảng ObjectDataAllPermission từ map đã nhóm
+  return Object.keys(groupedPermissions).map(module => ({
+    permissionName: module.toUpperCase(), // lấy module và chuyển thành chữ hoa
+    dataPermission: groupedPermissions[module], // lấy danh sách dataPermission đã nhóm
+  }));
+};
+
+const fncGetAllPermission = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Permission')
+    store.items = result.data.data
+    arrayConvertPermission.value  = convertPermissions(result.data.data);
+  } catch (error) {
+    store.items = []
+  }
+}
+
+// check store empty
+if(store.items.length === 0) {
+  console.log("0")
+  fncGetAllPermission()
+}else {
+  arrayConvertPermission.value = convertPermissions(store.items) 
+}
+
+
 const RoleData = ref<IRole>({
-  nameRole: '',
+  role_id:0,
+  name: '',
   status: false,
   description: '',
-  objPermission: [],
-  createdAt: '',
-  updatedAt: ''
+  arrIdPermission: [],
+  createdAt: new Date(),
+  updatedAt: undefined,
+  isDeleted:false,
 })
 // onclickRow
 const checkChangeData: Ref<boolean> = ref(false)
 const handleSetCheckChangeDataFalse = () => {
   checkChangeData.value = false
 }
-const showRow = (val: ClickRowArgument) => {
+const showRow = async (val: ClickRowArgument) => {
   if (checkDelete.value) {
-    handleLoadingNotication('Xóa thành công', 500, 'bottom-center')
-    storeRole.deleteRole(val.nameRole)
+    const result = await axiosInstance.delete('/api/Role', {
+      params: { id: val.role_id }
+    })
+    if (result.data.isSuccess) {
+      handleLoadingNotication('Xóa thành công', 500, 'top-center')
+      storeRole.deleteRole(val.role_id)
+    } else {
+      handleLoadingNoticationError('có lỗi xảy ra!', 500, 'top-center')
+    }
     checkDelete.value = false
   } else {
     RoleData.value = val as any
@@ -79,13 +154,13 @@ const showRow = (val: ClickRowArgument) => {
             <input placeholder="nhập từ tìm kiếm" type="text" v-model="searchValue" />
           </div>
         </div>
-        <CreateRole />
+        <CreateRole  :arrayConvertPermission="arrayConvertPermission"/>
       </div>
       <EasyDataTable
         table-class-name="customize-table"
         theme-color="#042dc2"
         :headers="headers"
-        :items="storeRole.allRole"
+        :items="storeRole.items"
         alternating
         header-text-direction="center"
         body-text-direction="center"
@@ -112,7 +187,7 @@ const showRow = (val: ClickRowArgument) => {
         </template>
 
         <!--template for name, example name User,...-->
-        <template #item-nameRole="{ nameRole }">
+        <template #item-name="{ name }">
           <p
             style="
               display: -webkit-box;
@@ -124,7 +199,22 @@ const showRow = (val: ClickRowArgument) => {
               font-size: 13px;
             "
           >
-            {{ nameRole }}
+            {{ name }}
+          </p>
+        </template>
+
+        <template #item-description="{ description }">
+          <p
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 2;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-size: 13px;
+            "
+          >
+            {{ description }}
           </p>
         </template>
 
@@ -163,7 +253,7 @@ const showRow = (val: ClickRowArgument) => {
     :show="showModal"
     :handleShowFalse="handleShowFalse"
   >
-    <ModalEditRole v-if="checkChangeData && RoleData.nameRole" :objData="RoleData"> </ModalEditRole>
+    <ModalEditRole v-if="checkChangeData && RoleData.name" :objData="RoleData" :arrayConvertPermission="arrayConvertPermission"> </ModalEditRole>
   </CptModalCenter>
 </template>
 <style lang="scss" scoped>

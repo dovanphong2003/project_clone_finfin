@@ -8,7 +8,7 @@ import axiosInstance from '@/services/axiosService';
 import { removeMatchingFields } from '@/common/functions/removeMatchingFields';
 
 const props = defineProps({
-  objPermission: {
+  ArrIdPermission: {
     type: Object as () => IPermission,
     required: true
   }
@@ -22,11 +22,11 @@ const items = Object.keys(MODULES).map((key) => {
 const store = useListPermissionStore()
 
 const formatFormData = async ({ name, path, method, module,description }) => {
-  if(path === props.objPermission.path && 
-  name === props.objPermission.name && 
-  method === props.objPermission.method && 
-  module === props.objPermission.module && 
-  description === props.objPermission.description  ) 
+  if(path === props.ArrIdPermission.path && 
+  name === props.ArrIdPermission.name && 
+  method === props.ArrIdPermission.method && 
+  module === props.ArrIdPermission.module && 
+  description === props.ArrIdPermission.description  ) 
   {
     handleLoadingNoticationError('Không có sự thay đổi nào cả!', 600, 'top-center')
     return;
@@ -36,10 +36,10 @@ const formatFormData = async ({ name, path, method, module,description }) => {
       path,
       method: method,
       module: module,
-      description: description}, props.objPermission),
+      description: description}, props.ArrIdPermission),
     }
     const dataSendServer: any = {
-      id:props.objPermission.permission_id,
+      id:props.ArrIdPermission.permission_id,
               FieldsToUpdate: { ...resultFill,
       updatedAt: new Date(),
       updatedBy:12353453, }
@@ -48,11 +48,11 @@ const formatFormData = async ({ name, path, method, module,description }) => {
     const result = await axiosInstance.patch('/api/Permission', dataSendServer)
     if (result.data.isSuccess) {
       store.editPermission({
-        permission_id:props.objPermission.permission_id,
+        permission_id:props.ArrIdPermission.permission_id,
      ...resultFill,
       updatedAt: new Date(),
       updatedBy:12353453,
-      } as any, props.objPermission.permission_id)
+      } as any, props.ArrIdPermission.permission_id)
       handleLoadingNotication('Cập nhật thành công', 600, 'top-right')
     } else {
       handleLoadingNoticationError('Cập nhật không thành công!', 600, 'top-center')
@@ -76,7 +76,7 @@ const formatFormData = async ({ name, path, method, module,description }) => {
           string: 'Tên phải là chuỗi ký tự'
         }"
         label="Tên"
-        :default="objPermission.name"
+        :default="ArrIdPermission.name"
       />
       <TextElement
         name="path"
@@ -88,7 +88,7 @@ const formatFormData = async ({ name, path, method, module,description }) => {
         :messages="{
           required: 'Không được bỏ trống api'
         }"
-        :default="objPermission.path"
+        :default="ArrIdPermission.path"
       />
       <SelectElement
         name="method"
@@ -118,13 +118,13 @@ const formatFormData = async ({ name, path, method, module,description }) => {
             label: 'DELETE'
           }
         ]"
-        :default="objPermission.method"
+        :default="ArrIdPermission.method"
       />
       <SelectElement
         name="module"
         label="Modules"
         :items="items"
-        :default="objPermission.module"
+        :default="ArrIdPermission.module"
         :rules="['required']"
         :messages="{
           required: 'Không được bỏ trống module'
@@ -140,7 +140,7 @@ const formatFormData = async ({ name, path, method, module,description }) => {
         :messages="{
           max: 'Mô tả không được vượt quá 100 ký tự',
         }"
-        :default="objPermission.description"
+        :default="ArrIdPermission.description"
       />
       <StaticElement name="divider_4" tag="hr" />
       <ButtonElement

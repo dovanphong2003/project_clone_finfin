@@ -3,186 +3,101 @@ import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/
 import { ref } from 'vue'
 import { IRole } from '@/common/interface'
 import { useListRoleStore } from '@/stores/listStores/listRole'
+import Swal from 'sweetalert2'
+import axiosInstance from '@/services/axiosService'
 
 // props
 const props = defineProps({
   objData: {
     type: Object as () => IRole,
     required: true
+  },
+  arrayConvertPermission: {
+    type: Object as () => any,
+    required: true
   }
 })
+
+// handle fillter for edit arr permission
+function compareArrays(arrA, arrB) {
+  const arrIdPermissionUpdate = arrA.filter(item => !arrB.includes(item));
+  const arrIdPermissionDelete = arrB.filter(item => !arrA.includes(item));
+
+  return {
+    arrIdPermissionUpdate,
+    arrIdPermissionDelete
+  };
+}
+const handleSuccessAndReload = async () => {
+  // Hiển thị thông báo với SweetAlert2
+  await Swal.fire({
+    title: 'Sửa thành công!',
+    icon: 'success',
+    confirmButtonText: 'OK'
+  });
+
+  // Reload trang sau khi người dùng bấm OK
+  window.location.reload();
+};
+console.log("data: ",props.objData);
 const store = useListRoleStore()
 const form$ = ref<any>(null)
 const submitForm = async (e) => {
   e.preventDefault()
   await form$.value.validate()
   if (form$.value.messageBag.baseErrors.length == 0) {
-    const valueSubmit: IRole = {
-      nameRole: form$.value.data.name_role,
+    console.log("toggle: ",toggledIndices.value)
+    console.log("arr props: ",props.objData.arrIdPermission)
+    const filterArray = compareArrays(toggledIndices.value,props.objData.arrIdPermission)
+    const valueSubmit = {
+      name: form$.value.data.name,
       status: form$.value.data.toggle,
       description: form$.value.data.des,
-      objPermission: toggledIndices.value,
-      createdAt: props.objData.createdAt,
-      updatedAt: '2024-08-26T17:08:14.008Z'
+      updatedAt: new Date(),
     }
-    store.editRole(valueSubmit, props.objData.nameRole)
-    handleLoadingNotication('Chỉnh sửa thành công', 500, 'top-center')
+    // handle arrPermission
+    const dataSendServer: any = {
+              id: props.objData.role_id,
+              FieldsToUpdate: { ...valueSubmit, updatedAt: new Date() },
+              PermissionUpdate:filterArray.arrIdPermissionUpdate,
+              PermissionDelete:filterArray.arrIdPermissionDelete,
+            }
+    const result = await axiosInstance.patch('/api/role',dataSendServer)
+    if(result.data.isSuccess) {
+      store.editRole({...valueSubmit, role_id:props.objData.role_id,}, props.objData.role_id)
+      // handleSuccessAndReload();
+    }
   } else {
     handleLoadingNoticationError('Vui lòng kiểm tra lại !', 500, 'top-center')
   }
 }
-const objectDataAllPermission = [
-  {
-    permissionName: 'COMPANIES',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies1',
-        des: 'get company with paginate'
-      },
-      {
-        type: 'POST',
-        api: '/api/v1/companies2',
-        des: 'post company'
-      },
-      {
-        type: 'GET',
-        api: '/api/v1/companies3',
-        des: 'get company '
-      },
-      {
-        type: 'DELETE',
-        api: '/api/v1/companies4',
-        des: 'delete company'
-      },
-      {
-        type: 'PATCH',
-        api: '/api/v1/companies5',
-        des: 'update company'
-      }
-    ]
-  },
-  {
-    permissionName: 'USERS',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies6',
-        des: 'get company with paginate'
-      },
-      {
-        type: 'POST',
-        api: '/api/v1/companies7',
-        des: 'post company'
-      },
-      {
-        type: 'GET',
-        api: '/api/v1/companies8',
-        des: 'get company '
-      },
-      {
-        type: 'DELETE',
-        api: '/api/v1/companies9',
-        des: 'delete company'
-      },
-      {
-        type: 'PATCH',
-        api: '/api/v1/companies10',
-        des: 'update company'
-      }
-    ]
-  },
-  {
-    permissionName: 'ROLES',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies11',
-        des: 'get company with paginate'
-      },
-      {
-        type: 'POST',
-        api: '/api/v1/companies12',
-        des: 'post company'
-      },
-      {
-        type: 'GET',
-        api: '/api/v1/companies13',
-        des: 'get company '
-      },
-      {
-        type: 'DELETE',
-        api: '/api/v1/companies14',
-        des: 'delete company'
-      },
-      {
-        type: 'PATCH',
-        api: '/api/v1/companies15',
-        des: 'update company'
-      }
-    ]
-  },
-  {
-    permissionName: 'PRODUCT',
-    dataPermission: [
-      {
-        type: 'GET',
-        api: '/api/v1/companies16',
-        des: 'get company with paginate'
-      },
-      {
-        id: 16,
-        type: 'POST',
-        api: '/api/v1/companies17',
-        des: 'post company'
-      },
-      {
-        id: 17,
-        type: 'GET',
-        api: '/api/v1/companies18',
-        des: 'get company '
-      },
-      {
-        id: 18,
-        type: 'DELETE',
-        api: '/api/v1/companies19',
-        des: 'delete company'
-      },
-      {
-        id: 19,
-        type: 'PATCH',
-        api: '/api/v1/companies20',
-        des: 'update company'
-      }
-    ]
-  }
-]
-const toggledIndices = ref<string[]>([])
+
+const toggledIndices = ref<number[]>([])
 const toggledIndicesParent = ref<number[]>([])
 
-const handleClick = (api: string): void => {
-  const position = toggledIndices.value.indexOf(api)
+const handleClick = (id: number): void => {
+  const position = toggledIndices.value.indexOf(id)
   if (position === -1) {
-    toggledIndices.value.push(api)
+    toggledIndices.value.push(id)
   } else {
     toggledIndices.value.splice(position, 1)
   }
 }
 const handleClickParent = (parentIndex: number) => {
-  const permission = objectDataAllPermission[parentIndex]
+  const permission = props.arrayConvertPermission[parentIndex]
   const positionParent = toggledIndicesParent.value.indexOf(parentIndex)
   if (positionParent === -1) {
     toggledIndicesParent.value.push(parentIndex)
     permission.dataPermission.forEach((item) => {
-      const position = toggledIndices.value.indexOf(item.api)
+      const position = toggledIndices.value.indexOf(item.id)
       if (position === -1) {
-        toggledIndices.value.push(item.api)
+        toggledIndices.value.push(item.id)
       }
     })
   } else {
     toggledIndicesParent.value.splice(positionParent, 1)
     permission.dataPermission.forEach((item) => {
-      const position = toggledIndices.value.indexOf(item.api)
+      const position = toggledIndices.value.indexOf(item.id)
       if (!(position === -1)) {
         toggledIndices.value.splice(position, 1)
       }
@@ -196,16 +111,16 @@ const handleClickImg = (e) => {
 
 // handle turn toggle
 const handleTurnToggle = () => {
-  for (let i = 0; i < objectDataAllPermission.length; i++) {
-    for (let j = 0; j < objectDataAllPermission[i].dataPermission.length; j++) {
-      const item = objectDataAllPermission[i].dataPermission[j]
-      if (props.objData.objPermission.includes(item.api)) {
+  for (let i = 0; i < props.arrayConvertPermission.length; i++) {
+    for (let j = 0; j < props.arrayConvertPermission[i].dataPermission.length; j++) {
+      const item = props.arrayConvertPermission[i].dataPermission[j]
+      if (props.objData.arrIdPermission.includes(item.id)) {
         toggledIndicesParent.value.push(i)
         break
       }
     }
   }
-  toggledIndices.value = [...props.objData.objPermission]
+  toggledIndices.value = [...props.objData.arrIdPermission]
 }
 handleTurnToggle()
 </script>
@@ -214,7 +129,7 @@ handleTurnToggle()
     <!--form info role-->
     <Vueform ref="form$">
       <TextElement
-        name="name_role"
+        name="name"
         label="Tên Role"
         :columns="{
           container: 6
@@ -223,7 +138,7 @@ handleTurnToggle()
         :messages="{
           required: 'Tên Role không được để trống'
         }"
-        :default="objData.nameRole"
+        :default="objData.name"
       />
       <ToggleElement
         :width="200"
@@ -241,10 +156,10 @@ handleTurnToggle()
       />
       <TextElement
         name="des"
-        label="Miêu tả"
+        label="Mô tả"
         :rules="['required']"
         :messages="{
-          required: 'Miêu tả không được để trống'
+          required: 'Mô tả không được để trống'
         }"
         :default="objData.description"
       />
@@ -257,7 +172,7 @@ handleTurnToggle()
     <ul>
       <li
         class="li_content_modal"
-        v-for="(permission, index) in objectDataAllPermission"
+        v-for="(permission, index) in props.arrayConvertPermission"
         :key="index"
       >
         <div class="panel-body panel-body_group">
@@ -276,8 +191,8 @@ handleTurnToggle()
             <div class="panel-body">
               <!--Only code you need is this label-->
               <label class="switch">
-                <input :class="{ toggle: toggledIndices.includes(item.api) }" type="checkbox" />
-                <div @click="handleClick(item.api)" class="slider round"></div>
+                <input :class="{ toggle: toggledIndices.includes(item.id) }" type="checkbox" />
+                <div @click="handleClick(item.id)" class="slider round"></div>
               </label>
               <div class="info_switch">
                 <p>{{ item.des }}</p>

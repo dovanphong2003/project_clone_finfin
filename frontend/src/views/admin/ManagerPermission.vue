@@ -33,7 +33,11 @@ const fncGetAllPermission = async () => {
     store.items = []
   }
 }
-fncGetAllPermission()
+
+// check store empty
+if(store.items.length === 0) {
+  fncGetAllPermission()
+}
 // search
 const searchField = ref('')
 const searchValue = ref('')
@@ -224,7 +228,7 @@ const showRow = async (val: ClickRowArgument) => {
         <ModalEditPermission
           v-if="activeModalVertical && UserData.name"
           :is="ModalEditPermission"
-          :objPermission="UserData"
+          :ArrIdPermission="UserData"
         ></ModalEditPermission>
       </CptModalRight>
     </div>

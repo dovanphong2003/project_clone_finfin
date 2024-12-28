@@ -58,12 +58,14 @@ export interface IUser {
 }
 
 export interface IRole {
-  nameRole: string
+  role_id:number
+  name: string
   status: boolean
   description: string
-  objPermission: string[]
-  createdAt: string
-  updatedAt: string
+  arrIdPermission: number[]
+  createdAt: Date
+  updatedAt?: Date
+  isDeleted:boolean
 }
 
 export interface IPermission {

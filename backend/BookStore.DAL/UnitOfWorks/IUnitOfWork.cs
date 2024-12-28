@@ -14,8 +14,8 @@ namespace BookStore.DAL.UnitOfWorks
         ICategoryRepository CategoryRepository { get; }
         IAuthorRepository AuthorRepository { get; }
         IPublisherRepository PublisherRepository { get; }
-
         IPermissionRepository PermissionRepository { get; }
+        IRoleRepository RoleRepository { get; }
         void Commit();    // Xác nhận transaction
         void Rollback();  // Hủy bỏ transaction
     }

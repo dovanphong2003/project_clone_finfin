@@ -220,6 +220,7 @@ namespace BookStore.DAL.Repositories
             if (item is Book book)
             {
                 book.book_id = reader.GetInt64(reader.GetOrdinal("book_id"));
+                book.ISBN = reader.IsDBNull(reader.GetOrdinal("ISBN")) ? null : reader.GetString(reader.GetOrdinal("ISBN"));
                 book.title = reader.GetString(reader.GetOrdinal("title"));
                 book.price = reader.GetInt64(reader.GetOrdinal("price"));
                 book.author_id = reader.GetInt64(reader.GetOrdinal("author_id"));

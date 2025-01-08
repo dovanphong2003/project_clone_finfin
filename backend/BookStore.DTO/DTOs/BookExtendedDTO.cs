@@ -9,6 +9,7 @@ namespace BookStore.DTO.DTOs
     public class BookExtendedDTO
     {
         public long book_id { get; set; }
+        public string? ISBN { get; set; }
         public string title { get; set; }
         public string imageUrl { get; set; }
         public long price { get; set; }

@@ -31,7 +31,8 @@ namespace BookStore.DAL.Repositories
             // Câu truy vấn SQL để lấy tất cả thông tin từ bảng Book và các trường name từ Author, Publisher, Category
             var query = @"
         SELECT 
-            b.book_id, 
+            b.book_id,
+            b.ISBN,
             b.title, 
             b.price,
             b.author_id, 
@@ -68,6 +69,7 @@ namespace BookStore.DAL.Repositories
                             var item = new BookExtendedDTO
                             {
                                 book_id = reader.GetInt64(reader.GetOrdinal("book_id")),
+                                ISBN = reader.IsDBNull(reader.GetOrdinal("ISBN")) ? null : reader.GetString(reader.GetOrdinal("ISBN")),
                                 title = reader.GetString(reader.GetOrdinal("title")),
                                 price = (long)reader.GetDecimal(reader.GetOrdinal("price")),
                                 author_id = reader.GetInt64(reader.GetOrdinal("author_id")),

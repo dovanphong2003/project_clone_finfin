@@ -11,6 +11,7 @@ namespace BookStore.DTO.DTOs
     public class BookCreateDTO
     {
         public long book_id { get; set; }
+        public string? ISBN { get; set; }
         public string title { get; set; }
 
         // Đổi thành lớp con cho infoImage

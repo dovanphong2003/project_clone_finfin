@@ -24,6 +24,7 @@ namespace BookStore.DAL.Entities
         public long createdBy { get; set; }
         public long? updatedBy { get; set; }
         public long? deleteBy { get; set; }
+        public string? ISBN { get; set; }
 
     }
 }

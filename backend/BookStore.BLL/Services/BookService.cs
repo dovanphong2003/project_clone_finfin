@@ -49,6 +49,7 @@ namespace BookStore.BLL.Services
                 var book = new Book
                 {
                     book_id = bookDTO.book_id,
+                    ISBN = bookDTO.ISBN,
                     title = bookDTO.title,
                     price = bookDTO.price,
                     author_id = bookDTO.author_id,

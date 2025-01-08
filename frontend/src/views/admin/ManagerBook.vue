@@ -16,7 +16,6 @@ import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
   { text: 'Nội dung', value: 'content', width: 130 },
-  { text: 'ID', value: 'book_id', width: 100 },
   { text: 'Tên sách', value: 'title', sortable: true, width: 130 },
   { text: 'Hình ảnh', value: 'imageUrl', width: 100 },
   { text: 'Giá', value: 'price' },
@@ -65,7 +64,7 @@ const books: IBookExtended[] = backendDataArray.map((backendData: any) => ({
   deleteBy: backendData.deleteBy ?? undefined   // Nếu null thì trả về undefined
 }));
 console.log(books);
-    store.items = books
+store.items = books
   } catch (error) {
     console.log('error: ', error)
     store.items = []
@@ -177,7 +176,6 @@ const loading = ref(true)
 setTimeout(() => {
   loading.value = false
 }, 1000)
-
 // onclick
 const bookData = ref<IBookExtended>(
 dataEmptyBook)
@@ -224,7 +222,17 @@ const showRow = async (val: ClickRowArgument) => {
         class="customize-table"
         theme-color="#042dc2"
         :headers="headers"
-        :items="store.items"
+        :items="store.items.map(item => {
+  return {
+    ...item,
+    publisher_id: item.publisher.publisher_id,
+    publisher_name: item.publisher.publisher_name,
+    category_id: item.category.category_id,
+    category_name: item.category.category_name,
+    author_id: item.author.author_id,
+    author_name: item.author.author_name
+  };
+})"
         alternating
         header-text-direction="center"
         body-text-direction="center"

@@ -47,14 +47,22 @@ export interface ISelectOptionsOfBook {
 
 
 export interface IUser {
-  name: string
-  email: string
-  age: string
-  gender: string
-  address?: string
-  role: string
-  createdAt: string
-  updatedAt: string
+user_id:number;
+name:string;
+email:string;
+password:string;
+age:number;
+gender?:string;
+address?:string;
+role_id:number;
+role_name:string;
+refreshToken:string;
+createdAt:Date;
+updatedAt:Date;
+isDeleted:boolean;
+createdBy:number;
+updatedBy:number;
+deleteBy:number;
 }
 
 export interface IRole {

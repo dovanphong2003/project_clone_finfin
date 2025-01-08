@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { defineProps, onBeforeMount, ref } from 'vue'
 import type { IUser } from '@/common/interface'
 import { useListUserStore } from '@/stores/listStores/listUser'
-import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
+import { handleLoading, handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
+import axiosInstance from '@/services/axiosService'
+import { removeMatchingFields } from '@/common/functions/removeMatchingFields'
 
 const props = defineProps({
   objUser: {
@@ -12,28 +14,65 @@ const props = defineProps({
 })
 
 const store = useListUserStore()
-
-const formatFormData = ({ name, age, selectGender, role, address }) => {
+// call api get select role
+const dataSelect = ref([])
+const fncGetAllRole = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Role')
+    dataSelect.value = result.data.data.map((items) => {
+      return {value:items.role_id,label:items.name}
+    })
+  } catch (error) {
+    console.log('error: ', error)
+  }
+}
+onBeforeMount(() => {
+  fncGetAllRole();
+});
+const formatFormData = async ({ name, age,password, selectGender, role, address }) => {
   handleLoading(600)
-  const dataEdit: IUser = {
+  const dataEdit: any = {
     name: name,
     email: props.objUser.email,
     age: age,
+    password:password,
     gender: selectGender,
     address: address,
-    role: role,
-    createdAt: '2022-02-26T17:08:14.008Z',
-    updatedAt: '2024-06-26T17:08:14.008Z'
+    role_id: role,
+    updatedBy: 6,
   }
-  store.editUser(dataEdit)
-  return {
-    // return obj use send to server
-  }
+  try {
+            const resultFill = {
+              ...removeMatchingFields(dataEdit, props.objUser),
+              updatedAt: new Date().toLocaleString()
+            }
+            if (resultFill.address == '') {
+              resultFill.address = null
+            }
+            if (resultFill.gender == '') {
+              resultFill.gender = null
+            }
+            const dataSendServer: any = {
+              id: props.objUser.user_id,
+              FieldsToUpdate: { ...resultFill, updatedAt: new Date() }
+            }
+console.log("data: ",resultFill)
+            const result = await axiosInstance.patch('/api/User', dataSendServer)
+            console.log('result: ', result.data)
+            if (result.data.isSuccess) {
+              handleLoadingNotication('cập nhật thành công', 600, 'top-center')
+              store.editUser(resultFill, props.objUser.user_id)
+            } else {
+              handleLoadingNoticationError('đã xảy ra lỗi!', 500, 'top-center')
+            }
+          } catch (error) {
+            handleLoadingNoticationError('đã xảy ra lỗi!: ' + error, 500, 'top-center')
+          }
 }
 </script>
 <template>
   <div class="modal_content_right">
-    <Vueform endpoint="/form/submit" method="post" :format-data="formatFormData">
+    <Vueform :endpoint="false" :format-data="formatFormData">
       <StaticElement name="divider_1" tag="hr" />
       <TextElement
         name="name"
@@ -45,14 +84,26 @@ const formatFormData = ({ name, age, selectGender, role, address }) => {
         }"
         label="Tên"
         :default="objUser.name"
+      />  <TextElement
+        name="password"
+        :rules="['required', 'max:255',]"
+        :messages="{
+          required: 'Không được bỏ trống mật khẩu',
+          max: 'Mật khẩu không được vượt quá 255 ký tự',
+        }"
+        label="Mật khẩu"
+        :default="objUser.password"
       />
       <TextElement
         name="age"
         :columns="{
           container: 6
         }"
+        :rules="['required']"
+        :messages="{
+          required: 'Không được bỏ trống tuổi',
+        }"
         label="Tuổi"
-        :rules="['nullable']"
         :default="objUser.age"
       />
       <SelectElement
@@ -87,17 +138,8 @@ const formatFormData = ({ name, age, selectGender, role, address }) => {
       <SelectElement
         name="role"
         label="Vai trò"
-        :items="[
-          {
-            value: 'admin',
-            label: 'admin'
-          },
-          {
-            value: 'customer',
-            label: 'customer'
-          }
-        ]"
-        :default="objUser.role"
+        :items="dataSelect"
+        :default="objUser.role_id"
         :rules="['required']"
         :messages="{
           required: 'Không được bỏ trống vai trò'

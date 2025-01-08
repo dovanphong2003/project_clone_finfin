@@ -24,6 +24,7 @@ const headers: Header[] = [
 // store role
 const storeRole = useListRoleStore()
 // call api get data all Role and arr permission of role
+
 const fncGetAllRole = async () => {
   try {
     const result = await axiosInstance.get('/api/Role')

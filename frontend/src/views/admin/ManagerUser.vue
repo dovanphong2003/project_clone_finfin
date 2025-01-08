@@ -3,27 +3,63 @@ import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
 import { useListUserStore } from '@/stores/listStores/listUser'
 // cpt modal right
 import ModalEditUser from '@/modules/ManagerUser/Modals/ModalEditUser.vue'
-import { handleLoadingNotication } from '@/common/functions/loading'
+import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
 import CreateUser from '@/modules/ManagerUser/CreateUser.vue'
 import { Ref, ref } from 'vue'
 import type { IUser } from '@/common/interface'
 import CptModalRight from '@/common/components/CptModalRight.vue'
+import axiosInstance from '@/services/axiosService'
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
+  { text: 'ID', value: 'user_id', width: 100 },
   { text: 'Tên', value: 'name', sortable: true, width: 130 },
   { text: 'Email', value: 'email', width: 100 },
   { text: 'Tuổi', value: 'age' },
   { text: 'Giới tính', value: 'gender', width: 100 },
-  { text: 'Vai trò', value: 'role', width: 100 },
+  { text: 'Vai trò', value: 'role_id', width: 150 },
   { text: 'Địa chỉ', value: 'address', width: 200 },
   { text: 'Ngày tạo', value: 'createdAt', width: 200 },
-  { text: 'Cập nhật mới', value: 'updatedAt', width: 200 }
+  { text: 'Người tạo', value: 'createdBy', width: 200 },
+  { text: 'Ngày cập nhật', value: 'updatedAt', width: 200 },
+  { text: 'Cập nhật bởi', value: 'updatedBy', width: 200 }
 ]
-const store = useListUserStore()
+// store User
+const storeUser = useListUserStore()
+// call api get data all User and arr permission of User
+const fncGetAllUser = async () => {
+  try {
+    const result = await axiosInstance.get('/api/User/extendedRole')
+    storeUser.items = result.data.data
+    console.log('result: ', result)
+  } catch (error) {
+    console.log('error: ', error)
+    storeUser.items = []
+  }
+}
+fncGetAllUser()
 // search
 const searchField = ref('')
 const searchValue = ref('')
 
+// set value IUser empty
+const dataEmpty:IUser = {
+user_id:0,
+name:'',
+email:'',
+password:'',
+age:0,
+gender:undefined,
+address:undefined,
+role_id:0,
+role_name:'',
+refreshToken:'',
+createdAt:new Date(),
+updatedAt:new Date(),
+isDeleted:false,
+createdBy:0,
+updatedBy:0,
+deleteBy:0,
+}
 // modal
 const titleModalVertical = 'Chỉnh sửa thông tin'
 const activeModalVertical: Ref<boolean> = ref(false)
@@ -33,16 +69,7 @@ const checkEdit: Ref<boolean> = ref(false)
 const handleClickCloseModalVertical = async () => {
   activeModalVertical.value = false
   disableModalVertical.value = true
-  UserData.value = {
-    name: '',
-    email: '',
-    age: '',
-    gender: '',
-    address: '',
-    role: '',
-    createdAt: '',
-    updatedAt: ''
-  }
+  UserData.value = dataEmpty
 }
 
 // handle deleteUser
@@ -63,23 +90,20 @@ setTimeout(() => {
 }, 1000)
 
 // onclick
-const UserData = ref<IUser>({
-  name: '',
-  email: '',
-  age: '',
-  gender: '',
-  address: '',
-  role: '',
-  createdAt: '',
-  updatedAt: ''
-})
-const showRow = (val: ClickRowArgument) => {
+const UserData = ref<IUser>(dataEmpty)
+const showRow = async (val: ClickRowArgument) => {
   if (checkDelete.value) {
-    handleLoadingNotication('Xóa thành công', 500, 'bottom-center')
-    store.deleteUser(val.email)
+    const result = await axiosInstance.delete('/api/User', {
+      params: { id: val.user_id }
+    })
+    if (result.data.isSuccess) {
+      handleLoadingNotication('Xóa thành công', 500, 'top-center')
+      storeUser.deleteUser(val.user_id)
+    } else {
+      handleLoadingNoticationError('có lỗi xảy ra!', 500, 'top-center')
+    }
     checkDelete.value = false
   } else {
-    delete val.indexInCurrentPage
     UserData.value = val as any
   }
 }
@@ -109,7 +133,7 @@ const showRow = (val: ClickRowArgument) => {
         table-class-name="customize-table"
         theme-color="#042dc2"
         :headers="headers"
-        :items="store.items"
+        :items="storeUser.items"
         alternating
         header-text-direction="center"
         body-text-direction="center"
@@ -118,9 +142,7 @@ const showRow = (val: ClickRowArgument) => {
         :loading="loading"
         :rows-per-page="10"
         :rows-items="[10, 15, 20, 25]"
-        show-index-symbol="TT"
         rows-per-page-message="Số hàng"
-        show-index
         @click-row="showRow"
         sort-by="sortBy"
         sort-type="sortType"
@@ -146,13 +168,26 @@ const showRow = (val: ClickRowArgument) => {
               -webkit-line-clamp: 2;
               overflow: hidden;
               text-overflow: ellipsis;
-              font-weight: 500;
+              font-size: 13px;
             "
           >
             {{ name }}
           </p>
         </template>
-
+        <template #item-email="{ email }">
+          <p
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-size: 13px;
+            "
+          >
+            {{ email }}
+          </p>
+        </template>
         <!--template for handle ( edit, delete )-->
         <template #item-handle>
           <div class="handle" style="width: 100%; text-align: center">
@@ -171,13 +206,21 @@ const showRow = (val: ClickRowArgument) => {
           </div>
         </template>
 
-        <!--template for status ( active, disable )-->
-        <template #item-status="{ status }">
-          <div class="status">
-            <div :class="[status == 'active' ? 'active' : 'error']" style="padding: 4px 20px">
-              {{ status == 'active' ? 'Active' : 'Disable' }}
-            </div>
-          </div>
+        <template #item-role_id="{ role_id,role_name }">
+          <p
+            style="
+              display: -webkit-box;
+              -webkit-box-orient: vertical;
+              -webkit-line-clamp: 3;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              font-weight: 700;
+              font-size: 13px;
+              color:forestgreen;
+            "
+          >
+            {{ role_id }}   <br>  {{ role_name }}
+          </p>
         </template>
       </EasyDataTable>
       <CptModalRight
@@ -232,21 +275,6 @@ const showRow = (val: ClickRowArgument) => {
 
     img:active {
       background-color: rgb(255, 255, 255);
-    }
-    .status {
-      text-align: center;
-      .error {
-        color: #cf2b0a;
-        border-radius: 4px;
-        background-color: rgba(207, 23, 10, 0.18);
-        border: 1px solid red;
-      }
-      .active {
-        color: #0acf97;
-        border-radius: 4px;
-        background-color: rgba(10, 207, 151, 0.18);
-        border: 1px solid #00bc87;
-      }
     }
   }
 }

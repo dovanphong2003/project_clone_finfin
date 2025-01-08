@@ -1,29 +1,66 @@
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { defineProps, onBeforeMount, ref } from 'vue'
 import type { CreateUserDTO } from '@/common/DTO/user.DTO'
 import type { IUser } from '@/common/interface'
 import { useListUserStore } from '@/stores/listStores/listUser'
-import { handleLoading, handleLoadingNotication } from '@/common/functions/loading'
+import { handleLoading, handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
+import axiosInstance from '@/services/axiosService'
+import { add } from 'lodash'
+import { format } from 'date-fns'
+import { createdIdAuto } from '@/common/functions/createIdAuto'
 const store = useListUserStore()
 
-const formatFormData = ({ name, password, email, age, gender, role, address }) => {
-  handleLoadingNotication('Tạo thành công', 600, 'top-right')
-
+// call api get select role
+const dataSelect = ref([])
+const fncGetAllRole = async () => {
+  try {
+    const result = await axiosInstance.get('/api/Role')
+    dataSelect.value = result.data.data.map((items) => {
+      return {value:items.role_id,label:items.name}
+    })
+  } catch (error) {
+    console.log('error: ', error)
+  }
+}
+onBeforeMount(() => {
+  fncGetAllRole();
+});
+const formatFormData = async ({ name, password, email, age, gender, role_id, address }) => {
   // data use update for frontend, if data send to server --> add password.
-  const dataCreateUser: IUser = {
+  const dataCreateUser = {
+    user_id:createdIdAuto(),
     name,
+    password,
     email,
     age,
-    gender,
-    role,
-    address,
-    createdAt: '2022-02-26T17:08:14.008Z',
-    updatedAt: '2024-06-26T17:08:14.008Z'
+    gender: gender == '' ? null : gender,
+    role_id:role_id,
+    address: address == '' ? null : address,
+    createdAt: new Date(),
+    createdBy:6,
   }
-  console.log('data: ', dataCreateUser)
-  store.addUser(dataCreateUser)
-  return {
-    // return obj use send to server
+  try {
+    const result = await axiosInstance.post('/api/User', dataCreateUser)
+    if (result.data.isSuccess) {
+      store.addUser({
+        ...dataCreateUser,
+        createdAt: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss.SSS"),
+        updatedAt: undefined,
+        updatedBy: undefined,
+        deleteBy: undefined,
+      } as any)
+      handleLoadingNotication('Tạo thành công', 600, 'top-right')
+    } else {
+      handleLoadingNoticationError('Tạo không thành công!', 600, 'top-center')
+      console.log("error: ",result.data)
+    }
+  } catch (error) {
+    if (error && (error as any).response && (error as any).response.data && (error as any).response.data.message) {
+    handleLoadingNoticationError((error as any).response.data.message, 600, 'top-right')
+} else {
+    handleLoadingNoticationError('Có lỗi đã xảy ra', 600, 'top-right')
+}
+
   }
 }
 </script>
@@ -31,8 +68,7 @@ const formatFormData = ({ name, password, email, age, gender, role, address }) =
   <div class="content_modal">
     <Vueform
       add-class="vf-edit-profile"
-      endpoint="/form/submit"
-      method="post"
+      :endpoint="false"
       :format-data="formatFormData"
     >
       <StaticElement name="divider_1" tag="hr" />
@@ -80,18 +116,9 @@ const formatFormData = ({ name, password, email, age, gender, role, address }) =
         placeholder="Nhập email..."
       />
       <SelectElement
-        name="role"
+        name="role_id"
         label="Vai trò"
-        :items="[
-          {
-            value: 'admin',
-            label: 'admin'
-          },
-          {
-            value: 'customer',
-            label: 'customer'
-          }
-        ]"
+        :items="dataSelect"
         :rules="['required']"
         :messages="{
           required: 'Không được bỏ trống vai trò'

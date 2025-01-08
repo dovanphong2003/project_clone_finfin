@@ -65,7 +65,7 @@ const submitForm = async (e) => {
     const result = await axiosInstance.patch('/api/role',dataSendServer)
     if(result.data.isSuccess) {
       store.editRole({...valueSubmit, role_id:props.objData.role_id,}, props.objData.role_id)
-      // handleSuccessAndReload();
+      handleSuccessAndReload();
     }
   } else {
     handleLoadingNoticationError('Vui lòng kiểm tra lại !', 500, 'top-center')

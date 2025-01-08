@@ -32,7 +32,7 @@ const submitForm = async (e) => {
       name: form$.value.data.name,
       status: form$.value.data.toggle,
       description: form$.value.data.description,
-      ArrIdPermission: toggledIndices.value,
+      arrIdPermission: toggledIndices.value,
       createdAt: new Date(),
       updatedAt: undefined,
       isDeleted:false,

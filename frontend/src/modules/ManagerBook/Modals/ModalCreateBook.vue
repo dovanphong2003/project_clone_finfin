@@ -30,7 +30,6 @@ const form$ = ref(null)
 // use upload image
 const preview = ref('')
 const notiImageEmpty = ref(false)
-const store = useListBookStore()
 interface ImageFile {
   name: string
   size: number
@@ -64,12 +63,14 @@ const submitForm = async () => {
     if (!image.value.name) notiImageEmpty.value = true
     const dataForm = {
       ...(form$.value as any).data,
+      ISBN:(form$.value as any).data.ISBN == '' ? null : (form$.value as any).data.ISBN,
       book_id:createdIdAuto(),
-      createdBy:123456788,
+      createdBy:6,
       ReceiveDate: new Date(),
       price: Number((form$.value as any).data.price),
       stock_quantity: Number((form$.value as any).data.stock_quantity),
     }
+    if(dataForm)
     if (
       dataForm.author_id &&
       dataForm.title &&
@@ -228,6 +229,24 @@ const resetForm = async () => {
           required: 'Nhà xuất bản không được để trống'
         }"
       />
+      <TextElement
+        name="ISBN"
+        :rules="['max:255']"
+        :messages="{
+          max: 'Mã ISBN không được vượt quá 255 ký tự'
+        }"
+        :columns="{
+          default: {
+            container: 6,
+            label: 12,
+            wrapper: 12
+          },
+          lg: {
+            container: 6
+          }
+        }"
+        label="ISBN"
+        />
       <ToggleElement
           name="status"
           :columns="{

@@ -15,6 +15,7 @@ import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/
 // cpt modal right
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
+  { text: 'Mã sách ISBN', value: 'ISBN', width: 130 },
   { text: 'Nội dung', value: 'content', width: 130 },
   { text: 'Tên sách', value: 'title', sortable: true, width: 130 },
   { text: 'Hình ảnh', value: 'imageUrl', width: 100 },
@@ -38,6 +39,7 @@ const fncGetAllBookExtended = async () => {
 const backendDataArray = result.data.data;
 const books: IBookExtended[] = backendDataArray.map((backendData: any) => ({
   book_id: backendData.book_id,
+  ISBN:backendData.isbn,
   title: backendData.title,
   imageUrl: backendData.imageUrl,
   price: backendData.price,
@@ -99,6 +101,7 @@ const checkEdit: Ref<boolean> = ref(false)
 
   const dataEmptyBook = {
     book_id : 0,
+    ISBN:'',
    title: '', 
   imageUrl: '',
    price: 0,

@@ -17,6 +17,7 @@ export interface IPublisherInfo {
 
 export interface IBookExtended {
   book_id: number;
+  ISBN?:string;
   title: string;
   imageUrl: string;
   price: number;

@@ -13,6 +13,11 @@ const LIST_LI_NAVIGATION = [
     link: 'ManagerBook'
   },
   {
+    name_li: 'Quản lí bán sách',
+    icon: '/img/icon_navigation/sell.png',
+    link: 'ManagerBuyBook'
+  },
+  {
     name_li: 'Chủ đề',
     icon: '/img/icon_navigation/category.png',
     link: 'ManagerCategory'

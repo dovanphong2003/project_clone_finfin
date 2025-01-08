@@ -69,6 +69,7 @@ const submitFormEdit = async () => {
     if (!image.value.name && !image.value) notiImageEmpty.value = true; // Kiểm tra nếu không có ảnh và không có ảnh mới
     const dataForm = {
       ...(form$.value as any).data,
+      ISBN:(form$.value as any).data.ISBN == '' ? null : (form$.value as any).data.ISBN,
       updatedBy: 123456788,  // Có thể là ID của người chỉnh sửa
       updatedAt: new Date(), // Thời gian cập nhật
       price: Number((form$.value as any).data.price),
@@ -148,7 +149,8 @@ const resetForm = async () => {
     name: props.objBook.title,
     price: props.objBook.price,
     category: props.objBook.category,
-    status: props.objBook.status
+    status: props.objBook.status,
+    ISBN:props.objBook.ISBN
   })
   preview.value = ''
   image.value = {}
@@ -229,6 +231,22 @@ onMounted(() => {
         container: 12
       },
       default: props.objBook.author.author_id
+    },
+    ISBN: {
+      type: 'text',
+      rules: ['max:255'],
+      columns: {
+        default: {
+          container: 6,
+          label: 12,
+          wrapper: 12
+        },
+        lg: {
+          container: 12
+        }
+      },
+      default: props.objBook.ISBN,
+      label: 'ISBN'
     },
     status: {
       type: 'toggle',

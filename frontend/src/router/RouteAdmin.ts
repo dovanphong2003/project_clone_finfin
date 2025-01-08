@@ -8,6 +8,7 @@ import ManagerCoupon from '@/views/admin/ManagerCoupon.vue'
 import ManagerPublisher from '@/views/admin/ManagerPublisher.vue'
 import ManagerAuthor from '@/views/admin/ManagerAuthor.vue'
 import ManagerCategory from '@/views/admin/ManagerCategory.vue'
+import ManagerBuyBook from '@/views/admin/ManagerBuyBook.vue'
 // if route admin --- checkAuth = true, check role = admin
 const routerAdmin = [
   {
@@ -21,6 +22,12 @@ const routerAdmin = [
     components: { routeAdmin: ManagerBook, routeCustomer: PageNotFound },
     name: 'ManagerBook',
     meta: { checkAuth: true, title: 'Quản lí sách' }
+  },
+  {
+    path: '/admin-buy_book',
+    components: { routeAdmin: ManagerBuyBook, routeCustomer: PageNotFound },
+    name: 'ManagerBuyBook',
+    meta: { checkAuth: true, title: 'Quản lí bán sách' }
   },
   {
     path: '/admin-user',

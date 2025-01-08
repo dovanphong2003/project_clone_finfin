@@ -19,7 +19,7 @@ namespace BookStore.API.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllRoles()
-        {
+        { 
             var result = await _roleService.GetAllRoles();
             return result.IsSuccess ? Ok(result) : NotFound(result.Error);
         }

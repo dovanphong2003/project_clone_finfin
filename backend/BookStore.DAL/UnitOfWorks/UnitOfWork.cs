@@ -27,6 +27,8 @@ namespace BookStore.DAL.UnitOfWorks
 
         public IRoleRepository RoleRepository { get; }
 
+        public IUserRepository UserRepository { get; }
+
         public UnitOfWork(DbContext dbContext, IConfiguration configuration)
         {
             _connection = dbContext.GetConnection();
@@ -39,6 +41,7 @@ namespace BookStore.DAL.UnitOfWorks
             PublisherRepository = new PublisherRepository(_connection, _transaction);
             PermissionRepository = new PermissionRepository(_connection, _transaction);
             RoleRepository = new RoleRepository(_connection, _transaction);
+            UserRepository = new UserRepository(_connection, _transaction);
         }
 
         public void Commit()

@@ -26,8 +26,8 @@ namespace BookStore.DAL.Repositories
         {
             var items = new List<T>();
 
-            // get name class, use when name table == name class
-            var tableName = typeof(T).Name;
+            // Get name of the class and handle reserved keywords
+            var tableName = $"[{typeof(T).Name}]"; // Wrap table name with square brackets
 
             var query = $"SELECT * FROM {tableName} WHERE isDeleted = 0";
 
@@ -57,7 +57,7 @@ namespace BookStore.DAL.Repositories
         public async Task<T> GetByIdAsync(long id)
         {
             T item = null;
-            var tableName = typeof(T).Name;
+            var tableName = $"[{typeof(T).Name}]"; // Wrap table name with square brackets
             var query = $"SELECT * FROM {tableName} WHERE Id = @Id";
 
             try
@@ -86,7 +86,7 @@ namespace BookStore.DAL.Repositories
         // Thêm một đối tượng
         public async Task AddAsync(T entity)
         {
-            var tableName = typeof(T).Name;
+            var tableName = $"[{typeof(T).Name}]"; // Wrap table name with square brackets
 
             var properties = typeof(T).GetProperties();
 
@@ -118,7 +118,7 @@ namespace BookStore.DAL.Repositories
 
         public async Task UpdateAsync(T entity, Dictionary<string, object> FieldsToUpdate, long id)
         {
-            var tableName = typeof(T).Name.ToLower(); 
+            var tableName = $"[{typeof(T).Name.ToLower()}]"; // Wrap table name with square brackets
             var nameColumnId = typeof(T).GetProperties()[0].Name;
 
             // Lấy danh sách khóa
@@ -193,7 +193,7 @@ namespace BookStore.DAL.Repositories
 
         public async Task DeleteAsync(long id)
         {
-            var tableName = typeof(T).Name.ToLower();
+            var tableName = $"[{typeof(T).Name.ToLower()}]";
             var nameColumnId = typeof(T).GetProperties()[0].Name;
             var query = $"UPDATE {tableName} SET isDeleted = 1 WHERE {nameColumnId} = @Id"; 
 
@@ -344,6 +344,26 @@ namespace BookStore.DAL.Repositories
                 permission.createdBy = reader.GetInt64(reader.GetOrdinal("createdBy"));
                 permission.updatedBy = reader.IsDBNull(reader.GetOrdinal("updatedBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("updatedBy"));
                 permission.deleteBy = reader.IsDBNull(reader.GetOrdinal("deleteBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("deleteBy"));
+            }
+
+            // Mapping for table User
+            if (item is User user)
+            {
+                user.user_id = reader.GetInt64(reader.GetOrdinal("user_id"));
+                user.name = reader.GetString(reader.GetOrdinal("name"));
+                user.email = reader.GetString(reader.GetOrdinal("email"));
+                user.password = reader.GetString(reader.GetOrdinal("password"));
+                user.age = reader.GetByte(reader.GetOrdinal("age"));
+                user.gender = reader.IsDBNull(reader.GetOrdinal("gender")) ? null : reader.GetString(reader.GetOrdinal("gender"));
+                user.address = reader.IsDBNull(reader.GetOrdinal("address")) ? null : reader.GetString(reader.GetOrdinal("address"));
+                user.role_id = reader.GetInt64(reader.GetOrdinal("role_id"));
+                user.refreshToken = reader.IsDBNull(reader.GetOrdinal("refreshToken")) ? null : reader.GetString(reader.GetOrdinal("refreshToken"));
+                user.createdAt = reader.GetDateTime(reader.GetOrdinal("createdAt"));
+                user.updatedAt = reader.IsDBNull(reader.GetOrdinal("updatedAt")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("updatedAt"));
+                user.isDeleted = reader.GetBoolean(reader.GetOrdinal("isDeleted"));
+                user.createdBy = reader.IsDBNull(reader.GetOrdinal("createdBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("createdBy"));
+                user.updatedBy = reader.IsDBNull(reader.GetOrdinal("updatedBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("updatedBy"));
+                user.deleteBy = reader.IsDBNull(reader.GetOrdinal("deleteBy")) ? (long?)null : reader.GetInt64(reader.GetOrdinal("deleteBy"));
             }
 
             // Các ánh xạ khác nếu cần

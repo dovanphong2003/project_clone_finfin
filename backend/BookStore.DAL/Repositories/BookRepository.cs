@@ -8,10 +8,6 @@ using BookStore.DAL.Entities;
 using Microsoft.Data.SqlClient;
 using BookStore.DTO.DTOs;
 using Microsoft.Extensions.Configuration;
-using Firebase.Auth;
-using Firebase.Storage;
-using Firebase.Auth.Providers;
-using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Newtonsoft.Json;
 namespace BookStore.DAL.Repositories

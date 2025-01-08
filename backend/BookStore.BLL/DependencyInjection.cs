@@ -19,6 +19,7 @@ namespace BookStore.BLL
             services.AddScoped<IPublisherService, PublisherService>();
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

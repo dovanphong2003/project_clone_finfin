@@ -19,6 +19,7 @@ namespace BookStore.DAL.UnitOfWorks
         private bool _disposed = false;
 
         public IBookRepository BookRepository { get; }
+        public IBookSoldRepository BookSoldRepository { get; }
         public ICategoryRepository CategoryRepository { get; }
         public IAuthorRepository AuthorRepository { get; }
         public IPublisherRepository PublisherRepository { get; }
@@ -36,6 +37,7 @@ namespace BookStore.DAL.UnitOfWorks
             _transaction = _connection.BeginTransaction();
 
             BookRepository = new BookRepository(_connection, _transaction, configuration);
+            BookSoldRepository = new BookSoldRepository(_connection, _transaction);
             CategoryRepository = new CategoryRepository(_connection, _transaction);
             AuthorRepository = new AuthorRepository(_connection, _transaction);
             PublisherRepository = new PublisherRepository(_connection, _transaction);

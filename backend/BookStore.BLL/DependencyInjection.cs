@@ -1,4 +1,5 @@
 ﻿using BookStore.BLL.Services;
+using BookStore.BLL.Services;
 using BookStore.BLL.Services.Interfaces;
 using BookStore.DAL.UnitOfWorks;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ namespace BookStore.BLL
 
             // Đăng ký UnitOfWork
             services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IBookSoldService, BookSoldService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IAuthorService, AuthorService>();
             services.AddScoped<IPublisherService, PublisherService>();

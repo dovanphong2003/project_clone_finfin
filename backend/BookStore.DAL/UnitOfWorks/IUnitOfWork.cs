@@ -11,6 +11,7 @@ namespace BookStore.DAL.UnitOfWorks
     public interface IUnitOfWork : IDisposable
     {
         IBookRepository BookRepository { get; }
+        IBookSoldRepository BookSoldRepository { get; }
         ICategoryRepository CategoryRepository { get; }
         IAuthorRepository AuthorRepository { get; }
         IPublisherRepository PublisherRepository { get; }

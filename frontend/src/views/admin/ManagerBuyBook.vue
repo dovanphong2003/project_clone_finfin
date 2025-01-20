@@ -1,64 +1,60 @@
 <script lang="ts" setup>
 import type { ClickRowArgument, Header } from 'vue3-easy-data-table'
-import { useListUserStore } from '@/stores/listStores/listUser'
 // cpt modal right
-import ModalEditUser from '@/modules/ManagerUser/Modals/ModalEditUser.vue'
+import ModalEditOrder from '@/modules/ManagerOrder/Modals/ModalEditOrder.vue'
 import { handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
-import CreateUser from '@/modules/ManagerUser/CreateUser.vue'
+import CreateOrder from '@/modules/ManagerOrder/CreateOrder.vue'
 import { Ref, ref } from 'vue'
-import type { IUser } from '@/common/interface'
+import type { IOrder } from '@/common/interface'
 import CptModalRight from '@/common/components/CptModalRight.vue'
 import axiosInstance from '@/services/axiosService'
+import { useListOrderStore } from '@/stores/listStores/listBookSold'
+import CptModalCenter from '@/common/components/CptModalCenter.vue'
+import ModalInfoUserBuyBook from '@/modules/ManagerOrder/Modals/ModalInfoUserBuyBook.vue'
 const headers: Header[] = [
   { text: 'Hành động', value: 'handle', width: 130 },
-  { text: 'ID', value: 'user_id', width: 100 },
-  { text: 'Tên', value: 'name', sortable: true, width: 130 },
-  { text: 'Email', value: 'email', width: 100 },
-  { text: 'Tuổi', value: 'age' },
-  { text: 'Giới tính', value: 'gender', width: 100 },
-  { text: 'Vai trò', value: 'role_id', width: 150 },
-  { text: 'Địa chỉ', value: 'address', width: 200 },
+  { text: 'Mã hóa đơn', value: 'order_id', width: 100 },
+  { text: 'Người mua', value: 'user_id', width: 130 },
+  { text: 'Người bán', value: 'seller', width: 150 },
+  { text: 'Trạng thái', value: 'status', width: 100 },
+  { text: 'Địa chỉ gửi đến', value: 'shippingAddress', width: 200 },
+  { text: 'Thanh toán', value: 'paymentMethod', width: 150 },
+  { text: 'Ngày đặt', value: 'order_date', width: 200 },
   { text: 'Ngày tạo', value: 'createdAt', width: 200 },
-  { text: 'Người tạo', value: 'createdBy', width: 200 },
   { text: 'Ngày cập nhật', value: 'updatedAt', width: 200 },
-  { text: 'Cập nhật bởi', value: 'updatedBy', width: 200 }
 ]
-// store User
-const storeUser = useListUserStore()
-// call api get data all User and arr permission of User
-const fncGetAllUser = async () => {
+// store Order
+const storeOrder = useListOrderStore()
+// call api get data all Order and arr permission of Order
+const fncGetAllOrder = async () => {
   try {
-    const result = await axiosInstance.get('/api/User/extendedRole')
-    storeUser.items = result.data.data
+    const result = await axiosInstance.get('/api/BookSold/extended')
+    storeOrder.items = result.data.data
     console.log('result: ', result)
   } catch (error) {
     console.log('error: ', error)
-    storeUser.items = []
+    storeOrder.items = []
   }
 }
-fncGetAllUser()
+fncGetAllOrder()
 // search
 const searchField = ref('')
 const searchValue = ref('')
 
-// set value IUser empty
-const dataEmpty:IUser = {
-user_id:0,
-name:'',
-email:'',
-password:'',
-age:0,
-gender:undefined,
-address:undefined,
-role_id:0,
-role_name:'',
-refreshToken:'',
-createdAt:new Date(),
-updatedAt:new Date(),
-isDeleted:false,
-createdBy:0,
-updatedBy:0,
-deleteBy:0,
+// set value IOrder empty
+const dataEmpty:IOrder = {
+  order_id:0, // ID của đơn hàng
+  user_id:null,// ID người dùng (có thể null)
+  status: '',// Trạng thái đơn hàng
+  order_date: new Date(),// Ngày đặt hàng (ISO 8601 format)
+  createdAt: new Date(),// Ngày tạo đơn hàng
+  updatedAt: null,// Ngày cập nhật đơn hàng (có thể null)
+  isDeleted: false,// Cờ đánh dấu đã xóa
+  cart_id:null,// ID giỏ hàng (có thể null)
+  shippingAddress:null,// Địa chỉ giao hàng
+  paymentMethod: '',// Phương thức thanh toán
+  seller: null, // ID người bán
+  infoSeller:null,// Thông tin người bán
 }
 // modal
 const titleModalVertical = 'Chỉnh sửa thông tin'
@@ -69,11 +65,11 @@ const checkEdit: Ref<boolean> = ref(false)
 const handleClickCloseModalVertical = async () => {
   activeModalVertical.value = false
   disableModalVertical.value = true
-  UserData.value = dataEmpty
+  OrderData.value = dataEmpty
 }
 
-// handle deleteUser
-const handleDeleteUser = () => {
+// handle deleteOrder
+const handleDeleteOrder = () => {
   checkDelete.value = true
 }
 
@@ -83,6 +79,12 @@ const handleClickVertical = async () => {
   activeModalVertical.value = true
   disableModalVertical.value = false
 }
+const showModal = ref(false)
+
+// handle set show = false;
+const handleShowFalse = () => {
+  showModal.value = false
+}
 
 const loading = ref(true)
 setTimeout(() => {
@@ -90,26 +92,26 @@ setTimeout(() => {
 }, 1000)
 
 // onclick
-const UserData = ref<IUser>(dataEmpty)
+const OrderData = ref<IOrder>(dataEmpty)
 const showRow = async (val: ClickRowArgument) => {
   if (checkDelete.value) {
-    const result = await axiosInstance.delete('/api/User', {
-      params: { id: val.user_id }
+    const result = await axiosInstance.delete('/api/Order', {
+      params: { id: val.Order_id }
     })
     if (result.data.isSuccess) {
       handleLoadingNotication('Xóa thành công', 500, 'top-center')
-      storeUser.deleteUser(val.user_id)
+      storeOrder.deleteOrder(val.Order_id)
     } else {
       handleLoadingNoticationError('có lỗi xảy ra!', 500, 'top-center')
     }
     checkDelete.value = false
   } else {
-    UserData.value = val as any
+    OrderData.value = val as any
   }
 }
 </script>
 <template>
-  <div class="main-manager_User">
+  <div class="main-manager_Order">
     <div class="table">
       <div class="header_table">
         <div class="searching">
@@ -127,13 +129,13 @@ const showRow = async (val: ClickRowArgument) => {
             <input placeholder="nhập từ tìm kiếm" type="text" v-model="searchValue" />
           </div>
         </div>
-        <CreateUser />
+        <CreateOrder />
       </div>
       <EasyDataTable
         table-class-name="customize-table"
         theme-color="#042dc2"
         :headers="headers"
-        :items="storeUser.items"
+        :items="storeOrder.items"
         alternating
         header-text-direction="center"
         body-text-direction="center"
@@ -154,14 +156,14 @@ const showRow = async (val: ClickRowArgument) => {
           <img
             class="img_not_found_data"
             src="https://i.pinimg.com/originals/71/3a/32/713a3272124cc57ba9e9fb7f59e9ab3b.gif"
-            style="width: 200px; height: 160px; user-select: none; border: none"
+            style="width: 200px; height: 160px; Order-select: none; border: none"
           />
           <h2>Không tìm thấy dữ liệu !</h2>
         </template>
 
-        <!--template for name, example name User,...-->
-        <template #item-name="{ name }">
-          <p
+        <!--template for seller, example seller Order,...-->
+        <template #item-seller="{ seller, infoSeller }">
+          <p @click="showModal = true"
             style="
               display: -webkit-box;
               -webkit-box-orient: vertical;
@@ -169,10 +171,20 @@ const showRow = async (val: ClickRowArgument) => {
               overflow: hidden;
               text-overflow: ellipsis;
               font-size: 13px;
+              font-weight: 600;
+              color: blue;
+              text-decoration: underline;
+              cursor: pointer;
             "
           >
-            {{ name }}
-          </p>
+          {{ seller }}
+        </p>
+           <div class="content_infoSeller">
+            <CptModalCenter title="" :show="showModal" :handleShowFalse="handleShowFalse">
+              <ModalInfoUserBuyBook :infoSeller="infoSeller"> </ModalInfoUserBuyBook>
+             
+            </CptModalCenter>
+           </div>
         </template>
         <template #item-email="{ email }">
           <p
@@ -186,6 +198,7 @@ const showRow = async (val: ClickRowArgument) => {
             "
           >
             {{ email }}
+            
           </p>
         </template>
         <!--template for handle ( edit, delete )-->
@@ -198,7 +211,7 @@ const showRow = async (val: ClickRowArgument) => {
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
             />
             <img
-              @click="handleDeleteUser"
+              @click="handleDeleteOrder"
               src="/icon/delete.png"
               alt="delete"
               style="margin: 0px 4px; padding: 6px 8px; height: 20px; cursor: pointer"
@@ -229,11 +242,11 @@ const showRow = async (val: ClickRowArgument) => {
         :disable-modal="disableModalVertical"
         @handle-click-close-modal="handleClickCloseModalVertical"
       >
-        <ModalEditUser
-          v-if="activeModalVertical && UserData.name"
-          :is="ModalEditUser"
-          :objUser="UserData"
-        ></ModalEditUser>
+        <ModalEditOrder
+          v-if="activeModalVertical && OrderData.status"
+          :is="ModalEditOrder"
+          :objOrder="OrderData"
+        ></ModalEditOrder>
       </CptModalRight>
     </div>
   </div>
@@ -277,5 +290,8 @@ const showRow = async (val: ClickRowArgument) => {
       background-color: rgb(255, 255, 255);
     }
   }
+}
+.content_infoSeller {
+  opacity: 1;
 }
 </style>

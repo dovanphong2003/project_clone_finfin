@@ -1,5 +1,5 @@
 ﻿using BookStore.DAL.Repositories.Interfaces;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient; // Sử dụng MySQL
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +10,10 @@ namespace BookStore.DAL.Repositories
 {
     public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
-        private readonly SqlConnection _connection;
-        private readonly SqlTransaction _transaction;
+        private readonly MySqlConnection _connection;
+        private readonly MySqlTransaction _transaction;
 
-        public CategoryRepository(SqlConnection connection, SqlTransaction transaction) : base(connection, transaction)
+        public CategoryRepository(MySqlConnection connection, MySqlTransaction transaction) : base(connection, transaction)
         {
             _connection = connection;
             _transaction = transaction;

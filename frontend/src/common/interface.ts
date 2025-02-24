@@ -51,15 +51,15 @@ export interface IOrder {
   order_id: number; // ID của đơn hàng
   user_id: number | null; // ID người dùng (có thể null)
   status: string; // Trạng thái đơn hàng
-  order_date: string; // Ngày đặt hàng (ISO 8601 format)
-  createdAt: string; // Ngày tạo đơn hàng
-  updatedAt: string | null; // Ngày cập nhật đơn hàng (có thể null)
+  order_date: Date; // Ngày đặt hàng (ISO 8601 format)
+  createdAt: Date; // Ngày tạo đơn hàng
+  updatedAt: Date | null; // Ngày cập nhật đơn hàng (có thể null)
   isDeleted: boolean; // Cờ đánh dấu đã xóa
   cart_id: number | null; // ID giỏ hàng (có thể null)
-  shippingAddress: string; // Địa chỉ giao hàng
+  shippingAddress: string | null; // Địa chỉ giao hàng
   paymentMethod: string; // Phương thức thanh toán
-  seller: number; // ID người bán
-  infoSeller: InfoSeller; // Thông tin người bán
+  seller: number | null; // ID người bán
+  infoSeller: InfoSeller | null; // Thông tin người bán
 }
 
 export interface ISelectOption {

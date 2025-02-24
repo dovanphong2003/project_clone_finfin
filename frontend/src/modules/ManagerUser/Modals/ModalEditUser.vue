@@ -56,7 +56,7 @@ const formatFormData = async ({ name, age,password, selectGender, role, address 
               id: props.objUser.user_id,
               FieldsToUpdate: { ...resultFill, updatedAt: new Date() }
             }
-console.log("data: ",resultFill)
+console.log("data: ",dataSendServer)
             const result = await axiosInstance.patch('/api/User', dataSendServer)
             console.log('result: ', result.data)
             if (result.data.isSuccess) {

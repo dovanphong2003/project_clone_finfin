@@ -1,5 +1,5 @@
 ﻿using BookStore.DAL.Repositories.Interfaces;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient; // Sử dụng MySQL
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +12,10 @@ namespace BookStore.DAL.Repositories
 {
     public class BookSoldRepository : GenericRepository<Order>, IBookSoldRepository
     {
-        private readonly SqlConnection _connection;
-        private readonly SqlTransaction _transaction;
+        private readonly MySqlConnection _connection;
+        private readonly MySqlTransaction _transaction;
 
-        public BookSoldRepository(SqlConnection connection, SqlTransaction transaction) : base(connection, transaction)
+        public BookSoldRepository(MySqlConnection connection, MySqlTransaction transaction) : base(connection, transaction)
         {
             _connection = connection;
             _transaction = transaction;
@@ -50,7 +50,7 @@ namespace BookStore.DAL.Repositories
 
             try
             {
-                using (var command = new SqlCommand(query, _connection, _transaction))
+                using (var command = new MySqlCommand(query, _connection, _transaction))
                 {
                     using (var reader = await command.ExecuteReaderAsync())
                     {
@@ -115,13 +115,13 @@ VALUES (@cart_id, @book_id, @quantity, @createdAt);";
     // Query để chèn dữ liệu vào Order
     var queryOrder = @"
 INSERT INTO [Order] (order_id, cart_id, status, order_date, createdAt, updatedAt, isDeleted, paymentMethod, seller)
-VALUES (@cart_id, @status, @order_date, @createdAt, @updatedAt, @isDeleted, @paymentMethod, @seller);";
+VALUES (@order_id, @cart_id, @status, @order_date, @createdAt, @updatedAt, @isDeleted, @paymentMethod, @seller);";
 
     try
     {
         // 1. Tạo Cart và lấy cart_id
         long cartId;
-        using (var command = new SqlCommand(queryCart, _connection, _transaction))
+        using (var command = new MySqlCommand(queryCart, _connection, _transaction))
         {
             command.Parameters.AddWithValue("@createdAt", order.createdAt);
 
@@ -131,7 +131,7 @@ VALUES (@cart_id, @status, @order_date, @createdAt, @updatedAt, @isDeleted, @pay
         // 2. Thêm các mục Item vào Cart
         foreach (var item in order.data)
         {
-            using (var command = new SqlCommand(queryItem, _connection, _transaction))
+            using (var command = new MySqlCommand(queryItem, _connection, _transaction))
             {
                 command.Parameters.AddWithValue("@cart_id", cartId);
                 command.Parameters.AddWithValue("@book_id", item.book.book_id);
@@ -143,7 +143,7 @@ VALUES (@cart_id, @status, @order_date, @createdAt, @updatedAt, @isDeleted, @pay
         }
 
         // 3. Tạo Order liên kết với Cart
-        using (var command = new SqlCommand(queryOrder, _connection, _transaction))
+        using (var command = new MySqlCommand(queryOrder, _connection, _transaction))
         {
                     command.Parameters.AddWithValue("@order_id", order.order_id);
                     command.Parameters.AddWithValue("@cart_id", cartId);

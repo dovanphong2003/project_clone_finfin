@@ -27,6 +27,8 @@ namespace BookStore.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] RoleDTO roleDTO)
         {
+            System.Console.WriteLine($"Received role_id: {roleDTO.role_id}");
+    System.Console.WriteLine($"Received arrIdPermission: {string.Join(", ", roleDTO.ArrIdPermission)}");
             var result = await _roleService.CreateRole(roleDTO);
             return result.IsSuccess
              ? Ok(result)

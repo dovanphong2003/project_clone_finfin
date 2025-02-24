@@ -65,25 +65,29 @@ namespace BookStore.BLL.Services
         }
 
         public async Task<Result> UpdateUser(User User, Dictionary<string, object> fieldsToUpdate, long id)
+{
+    try
+    {
+        if (fieldsToUpdate.ContainsKey("password")) // Kiểm tra nếu có key "password"
         {
-            try
+            var password = fieldsToUpdate["password"]?.ToString(); // Lấy giá trị password
+            if (!string.IsNullOrEmpty(password))
             {
-                var password = fieldsToUpdate["password"]?.ToString(); // Chuyển thành chuỗi nếu cần
-                if (!string.IsNullOrEmpty(password))
-                {
-                    var plainTextBytes = Encoding.UTF8.GetBytes(password);
-                    fieldsToUpdate["password"] = Convert.ToBase64String(plainTextBytes);
-                }
-                await _unitOfWork.UserRepository.UpdateAsync(User, fieldsToUpdate, id);
+                var plainTextBytes = Encoding.UTF8.GetBytes(password);
+                fieldsToUpdate["password"] = Convert.ToBase64String(plainTextBytes);
+            }
+        }   
 
-                _unitOfWork.Commit();
-                return Result.Success();
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure(ex.Message);
-            }
-        }
+        await _unitOfWork.UserRepository.UpdateAsync(User, fieldsToUpdate, id);
+        _unitOfWork.Commit();
+        return Result.Success();
+    }
+    catch (Exception ex)
+    {
+        return Result.Failure(ex.Message);
+    }
+}
+
 
         public async Task<Result> DeleteUser(long id)
         {

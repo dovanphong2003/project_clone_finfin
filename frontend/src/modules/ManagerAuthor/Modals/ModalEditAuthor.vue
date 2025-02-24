@@ -35,7 +35,7 @@ const store = useListAuthorStore()
               id: props.objAuthor.author_id,
               FieldsToUpdate: { ...resultFill, updatedAt: new Date() }
             }
-
+            console.log('data send server: ',dataSendServer)
             const result = await axiosInstance.patch('/api/Author', dataSendServer)
             console.log('result: ', result.data)
             if (result.data.isSuccess) {

@@ -1,6 +1,6 @@
 {
-  "typescript.suggest.enabled": true,
-  "vetur.experimental.templateInterpolationService": true,
-  "volar.autoCompleteRefs": true,
-  "typescript.tsdk": "node_modules/typescript/lib"
-}
+    "typescript.suggest.enabled": true,
+    "vetur.experimental.templateInterpolationService": true,
+    "volar.autoCompleteRefs": true,
+    "typescript.tsdk": "node_modules/typescript/lib"
+  }

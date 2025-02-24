@@ -10,7 +10,7 @@ namespace BookStore.DTO.DTOs
     {
         public long id { get; set; } // get id need update
         public Dictionary<string, object> FieldsToUpdate { get; set; }
-        public List<int> PermissionUpdate { get; set; }
-        public List<int> PermissionDelete { get; set; }
+        public List<long> PermissionUpdate { get; set; }
+        public List<long> PermissionDelete { get; set; }
     }
 }

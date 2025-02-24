@@ -10,7 +10,7 @@ namespace BookStore.Shared.Response
     {
         public T? Data { get; }
 
-        public Result(bool isSuccess, Error error, T? data) : base(isSuccess, error)
+        public Result(bool isSuccess, Error error, T? data) :   base(isSuccess, error)
         {
             Data = data;
         }

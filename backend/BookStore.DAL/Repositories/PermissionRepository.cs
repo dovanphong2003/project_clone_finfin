@@ -6,16 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using BookStore.DAL.Entities;
 using BookStore.DAL.Repositories.Interfaces;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient; // Sử dụng MySQL
 
 namespace BookStore.DAL.Repositories
 {
     internal class PermissionRepository : GenericRepository<Permission>, IPermissionRepository
     {
-        private readonly SqlConnection _connection;
-        private readonly SqlTransaction _transaction;
+        private readonly MySqlConnection _connection;
+        private readonly MySqlTransaction _transaction;
 
-        public PermissionRepository(SqlConnection connection, SqlTransaction transaction) : base(connection, transaction)
+        public PermissionRepository(MySqlConnection connection, MySqlTransaction transaction) : base(connection, transaction)
         {
             _connection = connection;
             _transaction = transaction;

@@ -62,7 +62,8 @@ const submitForm = async (e) => {
               PermissionUpdate:filterArray.arrIdPermissionUpdate,
               PermissionDelete:filterArray.arrIdPermissionDelete,
             }
-    const result = await axiosInstance.patch('/api/role',dataSendServer)
+      console.log("data send server: ",dataSendServer)
+    const result = await axiosInstance.patch('/api/Role',dataSendServer)
     if(result.data.isSuccess) {
       store.editRole({...valueSubmit, role_id:props.objData.role_id,}, props.objData.role_id)
       handleSuccessAndReload();

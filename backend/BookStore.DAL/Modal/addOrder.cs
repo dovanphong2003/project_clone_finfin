@@ -9,7 +9,7 @@ namespace BookStore.DAL.Modal
     public class AddOrder
     {
         public long order_id { get; set; }
-        public bigint seller {get;set}
+        public long seller { get; set; }
         public List<OrderItem> data { get; set; }
         public DateTime createdAt { get; set; }
         public int createdBy { get; set; }

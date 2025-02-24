@@ -22,6 +22,7 @@ builder.Services.AddCors(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddSwaggerGen(o => o.SwaggerDoc("V1", new Microsoft.OpenApi.Models.OpenApiInfo
 {
     Title = "API WEB BOOK STORE",
@@ -40,7 +41,6 @@ builder.Services.AddDataAccess();
 
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { defineProps, onBeforeMount, ref } from 'vue'
-import type { IUser } from '@/common/interface'
+import type { IOrder, IUser } from '@/common/interface'
 import { useListUserStore } from '@/stores/listStores/listUser'
 import { handleLoading, handleLoadingNotication, handleLoadingNoticationError } from '@/common/functions/loading'
 import axiosInstance from '@/services/axiosService'
@@ -8,7 +8,7 @@ import { removeMatchingFields } from '@/common/functions/removeMatchingFields'
 
 const props = defineProps({
   objUser: {
-    type: Object as () => IUser,
+    type: Object as () => IOrder,
     required: true
   }
 })

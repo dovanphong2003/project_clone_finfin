@@ -1,6 +1,6 @@
 ﻿using BookStore.DataAccess.DataContext;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient; // Sử dụng MySQL
 namespace BookStore.DataAccess
 {
     public static class DependencyInjection
@@ -9,8 +9,9 @@ namespace BookStore.DataAccess
         {
             // Đăng ký DbContext
             services.AddSingleton<DbContext>();
-            services.AddSingleton<SqlConnection>();
+            services.AddSingleton<MySqlConnection>();
             return services;
         }
     }
+
 }
